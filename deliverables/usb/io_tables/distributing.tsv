@@ -1,0 +1,20 @@
+Name	Address	Type	Comment
+Station_1B2	0.01	BOOL	Ejection Cylinder Extended (T2 sensor_end)
+Station_1B1	0.02	BOOL	Ejection Cylinder Retracted (T2 sensor_home)
+Station_2B1	0.03	BOOL	Workpiece Gripped / Vacuum Present
+Station_3S1	0.04	BOOL	Arm in position - Magazine (T1 sensor_home)
+Station_3S2	0.05	BOOL	Arm in position - Downstream (T1 sensor_end)
+Station_B4	0.06	BOOL	Magazine Empty
+IP_FI	0.07	BOOL	Succeeding Station Free
+Panel_S1	0.08	BOOL	Start Button
+Panel_S2	0.09	BOOL	Stop Button
+Panel_S4	0.11	BOOL	Reset Button
+Station_1Y1	1.00	BOOL	Magazine_Eject (T2 valve_extend)
+Station_2Y1	1.01	BOOL	Vacuum_On (Main)
+Station_2Y2	1.02	BOOL	Ejector_Pulse_On (Main)
+Station_3Y1	1.03	BOOL	Arm_to_Magazine (T1 valve_to_home)
+Station_3Y2	1.04	BOOL	Arm_to_Subsequent (T1 valve_to_end)
+Station_H1	1.08	BOOL	Start indicator light
+Station_H2	1.09	BOOL	Reset indicator light
+Panel_H3	1.10	BOOL	Q1 indicator light
+Panel_H4	1.11	BOOL	Q2 indicator light

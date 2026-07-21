@@ -1,0 +1,21 @@
+Name	Address	Type	Comment
+Part_AV	0.00	BOOL	Workpiece Available
+Station_B2	0.01	BOOL	Metallic Workpiece
+Station_B3	0.02	BOOL	Workpiece not black
+Station_B4	0.03	BOOL	Slide Full
+Station_1B1	0.04	BOOL	Branch 1 Retracted (T2 sensor_home)
+Station_1B2	0.05	BOOL	Branch 1 Extended (T2 sensor_end)
+Station_2B1	0.06	BOOL	Branch 2 Retracted (T2 sensor_home)
+Station_2B2	0.07	BOOL	Branch 2 Extended (T2 sensor_end)
+Panel_S1	0.08	BOOL	Start Button
+Panel_S2	0.09	BOOL	Stop Button
+Panel_S4	0.11	BOOL	Reset Button
+Station_K1	1.00	BOOL	Conveyor Motor ON
+Station_1Y1	1.01	BOOL	Branch 1 to extend (T2 valve_extend)
+Station_2Y1	1.02	BOOL	Branch 2 to extend (T2 valve_extend)
+Station_3Y1	1.03	BOOL	Stopper to Retract (T3 valve_extend)
+IP_N_FO	1.07	BOOL	Station Occupied
+Station_H1	1.08	BOOL	Start Indicator Light
+Station_H2	1.09	BOOL	Reset Indicator Light
+Station_H3	1.10	BOOL	Q1 indicator light
+Station_H4	1.11	BOOL	Q2 indicator light

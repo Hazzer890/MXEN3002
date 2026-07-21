@@ -1,0 +1,8 @@
+# Course source material (Curtin copyright) — kept local, not redistributed
+/*.pdf
+
+# Python / build artefacts
+__pycache__/
+*.pyc
+.mmdc.json
+.puppeteer.json

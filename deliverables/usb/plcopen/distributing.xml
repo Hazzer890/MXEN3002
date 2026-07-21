@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.plcopen.org/xml/tc6_0201"
+         xmlns:xhtml="http://www.w3.org/1999/xhtml"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <fileHeader companyName="MXEN3002" productName="Festo Station Control"
+              productVersion="1.0" creationDateTime="2026-07-20T16:20:05"/>
+  <contentHeader name="MXEN3002 distributing">
+    <coordinateInfo>
+      <fbd><scaling x="1" y="1"/></fbd>
+      <ld><scaling x="1" y="1"/></ld>
+      <sfc><scaling x="1" y="1"/></sfc>
+    </coordinateInfo>
+  </contentHeader>
+  <types>
+    <dataTypes/>
+    <pous>
+    <pou name="FB_Panel" pouType="functionBlock">
+      <interface>
+        <inputVars>
+          <variable name="s1_start"><type><BOOL/></type></variable>
+          <variable name="s2_stop"><type><BOOL/></type></variable>
+          <variable name="s4_reset"><type><BOOL/></type></variable>
+          <variable name="error_in"><type><BOOL/></type></variable>
+          <variable name="reset_done"><type><BOOL/></type></variable>
+        </inputVars>
+        <outputVars>
+          <variable name="run_mode"><type><BOOL/></type></variable>
+          <variable name="reset_mode"><type><BOOL/></type></variable>
+          <variable name="pause_mode"><type><BOOL/></type></variable>
+          <variable name="error_mode"><type><BOOL/></type></variable>
+          <variable name="start_light"><type><BOOL/></type></variable>
+          <variable name="reset_light"><type><BOOL/></type></variable>
+        </outputVars>
+        <localVars>
+          <variable name="reset_mode"><type><BOOL/></type></variable>
+          <variable name="pause_mode"><type><BOOL/></type></variable>
+          <variable name="error_mode"><type><BOOL/></type></variable>
+          <variable name="start_light"><type><BOOL/></type></variable>
+          <variable name="reset_light"><type><BOOL/></type></variable>
+          <variable name="state"><type><INT/></type><initialValue><simpleValue value="0"/></initialValue></variable>
+        </localVars>
+      </interface>
+      <body>
+        <ST><xhtml xmlns="http://www.w3.org/1999/xhtml">IF error_in AND state &lt;&gt; 3 THEN
+    state := 3;                          // ERROR forced from any state
+ELSIF state = 0 THEN                     // PAUSE
+    IF s1_start THEN
+        state := 1;
+    ELSIF s4_reset THEN
+        state := 2;
+    END_IF;
+ELSIF state = 1 THEN                     // RUN
+    IF s2_stop THEN state := 0; END_IF;  // S4 ignored here
+ELSIF state = 2 THEN                     // RESET
+    IF s2_stop OR reset_done THEN state := 0; END_IF;   // S1 ignored here
+ELSIF state = 3 THEN                     // ERROR
+    IF s4_reset THEN state := 2; END_IF; // clears fault, begins reset/homing
+END_IF;
+
+run_mode    := (state = 1);
+pause_mode  := (state = 0);
+reset_mode  := (state = 2);
+error_mode  := (state = 3);
+start_light := run_mode;
+reset_light := reset_mode;</xhtml></ST>
+      </body>
+    </pou>
+    <pou name="FB_Actuator_T1" pouType="functionBlock">
+      <interface>
+        <inputVars>
+          <variable name="run_mode"><type><BOOL/></type></variable>
+          <variable name="pause_mode"><type><BOOL/></type></variable>
+          <variable name="reset_mode"><type><BOOL/></type></variable>
+          <variable name="error_mode"><type><BOOL/></type></variable>
+          <variable name="sensor_home"><type><BOOL/></type></variable>
+          <variable name="sensor_end"><type><BOOL/></type></variable>
+          <variable name="go"><type><BOOL/></type></variable>
+          <variable name="t_stall"><type><TIME/></type><initialValue><simpleValue value="T#2s"/></initialValue></variable>
+          <variable name="robust"><type><BOOL/></type><initialValue><simpleValue value="FALSE"/></initialValue></variable>
+        </inputVars>
+        <outputVars>
+          <variable name="at_home"><type><BOOL/></type></variable>
+          <variable name="to_end"><type><BOOL/></type></variable>
+          <variable name="at_end"><type><BOOL/></type></variable>
+          <variable name="to_home"><type><BOOL/></type></variable>
+          <variable name="valve_to_end"><type><BOOL/></type></variable>
+          <variable name="valve_to_home"><type><BOOL/></type></variable>
+          <variable name="error"><type><BOOL/></type></variable>
+        </outputVars>
+        <localVars>
+          <variable name="to_end"><type><BOOL/></type></variable>
+          <variable name="at_end"><type><BOOL/></type></variable>
+          <variable name="to_home"><type><BOOL/></type></variable>
+          <variable name="valve_to_end"><type><BOOL/></type></variable>
+          <variable name="valve_to_home"><type><BOOL/></type></variable>
+          <variable name="error"><type><BOOL/></type></variable>
+          <variable name="state"><type><INT/></type><initialValue><simpleValue value="0"/></initialValue></variable>
+          <variable name="stall"><type><derived name="TON"/></type></variable>
+          <variable name="moving"><type><BOOL/></type></variable>
+        </localVars>
+      </interface>
+      <body>
+        <ST><xhtml xmlns="http://www.w3.org/1999/xhtml">CASE state OF
+0:  (* AT_HOME *)
+    IF error_mode THEN state := 4;
+    ELSIF reset_mode THEN
+        IF NOT sensor_home THEN state := 3; END_IF;
+    ELSIF run_mode AND go THEN
+        state := 1;
+    END_IF;
+1:  (* TO_END *)
+    IF error_mode THEN state := 4;
+    ELSIF reset_mode THEN state := 3;          // abort stroke, go home
+    ELSIF pause_mode THEN ;                     // freeze in place
+    ELSIF sensor_end THEN state := 2;
+    END_IF;
+2:  (* AT_END *)
+    IF error_mode THEN state := 4;
+    ELSIF reset_mode THEN state := 3;
+    ELSIF run_mode AND go THEN state := 3;      // continuous cycle
+    END_IF;
+3:  (* TO_HOME *)
+    IF error_mode THEN state := 4;
+    ELSIF pause_mode AND NOT reset_mode THEN ;  // freeze (reset overrides pause)
+    ELSIF sensor_home THEN state := 0;
+    END_IF;
+4:  (* ERROR -- valves off, recover only via reset sequence *)
+    IF reset_mode THEN
+        IF sensor_home THEN state := 0; ELSE state := 3; END_IF;
+    END_IF;
+END_CASE;
+
+// Valves derive from the final state; pause zeroes them (hold in place).
+valve_to_end  := (state = 1) AND NOT pause_mode;
+valve_to_home := (state = 3) AND NOT pause_mode;
+
+// Stall detection: commanding a valve but not arriving.
+moving := valve_to_end OR valve_to_home;
+stall(IN := robust AND moving, PT := t_stall);
+IF stall.Q THEN state := 4; END_IF;
+
+IF state = 4 THEN
+    valve_to_end := FALSE;
+    valve_to_home := FALSE;
+END_IF;
+
+at_home := (state = 0);
+to_end  := (state = 1);
+at_end  := (state = 2);
+to_home := (state = 3);
+error   := (state = 4);</xhtml></ST>
+      </body>
+    </pou>
+    <pou name="FB_Actuator_T2" pouType="functionBlock">
+      <interface>
+        <inputVars>
+          <variable name="run_mode"><type><BOOL/></type></variable>
+          <variable name="pause_mode"><type><BOOL/></type></variable>
+          <variable name="reset_mode"><type><BOOL/></type></variable>
+          <variable name="error_mode"><type><BOOL/></type></variable>
+          <variable name="sensor_home"><type><BOOL/></type></variable>
+          <variable name="sensor_end"><type><BOOL/></type></variable>
+          <variable name="go"><type><BOOL/></type></variable>
+          <variable name="t_stall"><type><TIME/></type><initialValue><simpleValue value="T#2s"/></initialValue></variable>
+          <variable name="robust"><type><BOOL/></type><initialValue><simpleValue value="FALSE"/></initialValue></variable>
+        </inputVars>
+        <outputVars>
+          <variable name="at_home"><type><BOOL/></type></variable>
+          <variable name="to_end"><type><BOOL/></type></variable>
+          <variable name="at_end"><type><BOOL/></type></variable>
+          <variable name="to_home"><type><BOOL/></type></variable>
+          <variable name="valve_extend"><type><BOOL/></type></variable>
+          <variable name="error"><type><BOOL/></type></variable>
+        </outputVars>
+        <localVars>
+          <variable name="to_end"><type><BOOL/></type></variable>
+          <variable name="at_end"><type><BOOL/></type></variable>
+          <variable name="to_home"><type><BOOL/></type></variable>
+          <variable name="valve_extend"><type><BOOL/></type></variable>
+          <variable name="error"><type><BOOL/></type></variable>
+          <variable name="state"><type><INT/></type><initialValue><simpleValue value="0"/></initialValue></variable>
+          <variable name="stall"><type><derived name="TON"/></type></variable>
+          <variable name="moving"><type><BOOL/></type></variable>
+        </localVars>
+      </interface>
+      <body>
+        <ST><xhtml xmlns="http://www.w3.org/1999/xhtml">CASE state OF
+0:  (* AT_HOME *)
+    IF error_mode THEN state := 4;
+    ELSIF reset_mode THEN
+        IF NOT sensor_home THEN state := 3; END_IF;
+    ELSIF run_mode AND go THEN state := 1;
+    END_IF;
+1:  (* TO_END -- stroke completes regardless of pause *)
+    IF error_mode THEN state := 4;
+    ELSIF sensor_end THEN state := 2;
+    END_IF;
+2:  (* AT_END -- valve held extended; only run advances to retract *)
+    IF error_mode THEN state := 4;
+    ELSIF reset_mode THEN state := 3;
+    ELSIF run_mode THEN state := 3;
+    END_IF;
+3:  (* TO_HOME -- valve off, spring retracts, completes regardless of pause *)
+    IF error_mode THEN state := 4;
+    ELSIF sensor_home THEN state := 0;
+    END_IF;
+4:  (* ERROR *)
+    IF reset_mode THEN
+        IF sensor_home THEN state := 0; ELSE state := 3; END_IF;
+    END_IF;
+END_CASE;
+
+valve_extend := (state = 1) OR (state = 2);
+IF state = 4 THEN valve_extend := FALSE; END_IF;
+
+moving := (state = 1) OR (state = 3);
+stall(IN := robust AND moving, PT := t_stall);
+IF stall.Q THEN
+    state := 4;
+    valve_extend := FALSE;
+END_IF;
+
+at_home := (state = 0);
+to_end  := (state = 1);
+at_end  := (state = 2);
+to_home := (state = 3);
+error   := (state = 4);</xhtml></ST>
+      </body>
+    </pou>
+    <pou name="Main_Distributing" pouType="program">
+      <interface>
+        <localVars>
+          <variable name="Panel"><type><derived name="FB_Panel"/></type></variable>
+          <variable name="Arm"><type><derived name="FB_Actuator_T1"/></type></variable>
+          <variable name="Ejector"><type><derived name="FB_Actuator_T2"/></type></variable>
+          <variable name="si"><type><INT/></type><initialValue><simpleValue value="0"/></initialValue></variable>
+          <variable name="cycles"><type><INT/></type><initialValue><simpleValue value="0"/></initialValue></variable>
+          <variable name="ROBUST"><type><BOOL/></type><initialValue><simpleValue value="TRUE"/></initialValue></variable>
+          <variable name="MAG"><type><INT/></type><initialValue><simpleValue value="5"/></initialValue></variable>
+        </localVars>
+      </interface>
+      <body>
+        <ST><xhtml xmlns="http://www.w3.org/1999/xhtml">reset_done := Arm.at_home AND Ejector.at_home;
+Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
+      error_in := fault, reset_done := reset_done);
+
+IF Panel.reset_mode OR Panel.error_mode THEN
+    si := 0; grip := 0; drop := 0; vacuum := FALSE; eject_pulse := FALSE;
+    IF Panel.reset_mode THEN cycles := 0; END_IF;
+END_IF;
+
+go_arm := FALSE; go_ej := FALSE; eject_pulse := FALSE;
+IF Panel.run_mode AND cycles &lt; MAG THEN
+    CASE si OF
+    0:  go_arm := TRUE;  IF Arm.at_end  THEN si := 1; END_IF;   (* 1 arm downstream *)
+    1:  go_ej  := TRUE;  IF Ejector.at_end  THEN si := 2; END_IF; (* 2 ejector push  *)
+    2:  go_arm := TRUE;  IF Arm.at_home THEN si := 3; END_IF;   (* 3 arm upstream  *)
+    3:  vacuum := TRUE;  grip := grip + 1;                       (* 4 vacuum grips  *)
+        IF grip &gt;= 1 THEN grip := 0; si := 4; END_IF;
+    4:  go_ej := FALSE;  IF Ejector.at_home THEN si := 5; END_IF; (* 5 ejector retract *)
+    5:  go_arm := TRUE;  IF Arm.at_end  THEN si := 6; END_IF;   (* 6 arm to end    *)
+    6:  eject_pulse := TRUE; vacuum := FALSE; drop := drop + 1;  (* 7 drop + vac off *)
+        IF drop &gt;= 1 THEN drop := 0; cycles := cycles + 1; si := 0; END_IF;
+    END_CASE;
+END_IF;
+
+Arm(run_mode := Panel.run_mode, pause_mode := Panel.pause_mode,
+    reset_mode := Panel.reset_mode, error_mode := Panel.error_mode,
+    sensor_home := Station_3S1, sensor_end := Station_3S2, go := go_arm,
+    t_stall := T#2s, robust := ROBUST);
+
+Ejector(run_mode := Panel.run_mode, pause_mode := Panel.pause_mode,
+    reset_mode := Panel.reset_mode, error_mode := Panel.error_mode,
+    sensor_home := Station_1B1, sensor_end := Station_1B2, go := go_ej,
+    t_stall := T#2s, robust := ROBUST);
+
+// Robust faults (1.10): stalled actuator, piece pulled off the vacuum
+// (vacuum commanded but Station_2B1 gripped-sensor lost), or arm reaching the
+// magazine with it empty (Station_B4).
+fault := ROBUST AND ( Arm.error OR Ejector.error
+    OR (Panel.run_mode AND vacuum AND NOT Station_2B1)
+    OR (Panel.run_mode AND Arm.at_home AND Station_B4 AND si &lt;&gt; 0) );
+
+// ---- physical outputs ----
+Station_3Y2 := Arm.valve_to_end;       // Arm_to_Subsequent (downstream)
+Station_3Y1 := Arm.valve_to_home;      // Arm_to_Magazine
+Station_1Y1 := Ejector.valve_extend;   // Magazine_Eject
+Station_2Y1 := vacuum      AND NOT Panel.error_mode;   // Vacuum_On
+Station_2Y2 := eject_pulse AND NOT Panel.error_mode;   // Ejector_Pulse_On
+Station_H1  := Panel.start_light;      // start light
+Station_H2  := Panel.reset_light;      // reset light
+Panel_H3    := (cycles &gt;= MAG);        // Q1  batch of 5 complete
+Panel_H4    := Panel.error_mode;       // Q2  error
+// IP_FI (succeeding-station-free) is jumpered TRUE stand-alone; for the
+// integrated line (L.2) gate step 6 delivery on IP_FI.</xhtml></ST>
+      </body>
+    </pou>
+    </pous>
+  </types>
+  <instances>
+    <configurations>
+      <configuration name="Config0">
+        <resource name="Resource0">
+          <globalVars>
+          <variable name="Station_1B2" address="%IX0.01"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Ejection Cylinder Extended (T2 sensor_end)</xhtml></documentation></variable>
+          <variable name="Station_1B1" address="%IX0.02"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Ejection Cylinder Retracted (T2 sensor_home)</xhtml></documentation></variable>
+          <variable name="Station_2B1" address="%IX0.03"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Workpiece Gripped / Vacuum Present</xhtml></documentation></variable>
+          <variable name="Station_3S1" address="%IX0.04"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Arm in position - Magazine (T1 sensor_home)</xhtml></documentation></variable>
+          <variable name="Station_3S2" address="%IX0.05"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Arm in position - Downstream (T1 sensor_end)</xhtml></documentation></variable>
+          <variable name="Station_B4" address="%IX0.06"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Magazine Empty</xhtml></documentation></variable>
+          <variable name="IP_FI" address="%IX0.07"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Succeeding Station Free</xhtml></documentation></variable>
+          <variable name="Panel_S1" address="%IX0.08"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Start Button</xhtml></documentation></variable>
+          <variable name="Panel_S2" address="%IX0.09"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Stop Button</xhtml></documentation></variable>
+          <variable name="Panel_S4" address="%IX0.11"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Reset Button</xhtml></documentation></variable>
+          <variable name="Station_1Y1" address="%QX1.00"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Magazine_Eject (T2 valve_extend)</xhtml></documentation></variable>
+          <variable name="Station_2Y1" address="%QX1.01"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Vacuum_On (Main)</xhtml></documentation></variable>
+          <variable name="Station_2Y2" address="%QX1.02"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Ejector_Pulse_On (Main)</xhtml></documentation></variable>
+          <variable name="Station_3Y1" address="%QX1.03"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Arm_to_Magazine (T1 valve_to_home)</xhtml></documentation></variable>
+          <variable name="Station_3Y2" address="%QX1.04"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Arm_to_Subsequent (T1 valve_to_end)</xhtml></documentation></variable>
+          <variable name="Station_H1" address="%QX1.08"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Start indicator light</xhtml></documentation></variable>
+          <variable name="Station_H2" address="%QX1.09"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Reset indicator light</xhtml></documentation></variable>
+          <variable name="Panel_H3" address="%QX1.10"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Q1 indicator light</xhtml></documentation></variable>
+          <variable name="Panel_H4" address="%QX1.11"><type><BOOL/></type><documentation><xhtml xmlns="http://www.w3.org/1999/xhtml">Q2 indicator light</xhtml></documentation></variable>
+          </globalVars>
+          <task name="PrimaryTask" priority="0" interval="T#10ms">
+            <pouInstance name="Main_Distributing_inst" typeName="Main_Distributing"/>
+          </task>
+        </resource>
+      </configuration>
+    </configurations>
+  </instances>
+</project>
