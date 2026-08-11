@@ -5,7 +5,7 @@
 PROGRAM Test_Panel
 VAR Panel : FB_Panel; END_VAR
 
-Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
+Panel(s1_start := Panel_S1, s2_stop := NOT Panel_S2, (* Stop wired NC *) s4_reset := Panel_S4,
       error_in := FALSE, reset_done := FALSE);
 
 Station_H1 := Panel.start_light;   // start light

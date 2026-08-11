@@ -31,7 +31,7 @@ VAR
 END_VAR
 
 reset_done := Branch1.at_home AND Branch2.at_home;
-Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
+Panel(s1_start := Panel_S1, s2_stop := NOT Panel_S2, (* Stop wired NC *) s4_reset := Panel_S4,
       error_in := fault, reset_done := reset_done);
 
 IF Panel.reset_mode OR Panel.error_mode THEN

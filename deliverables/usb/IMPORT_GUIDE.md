@@ -101,8 +101,16 @@ If PLCopen import is unavailable or misbehaves:
      variable table, and the code body into the ST editor. (Sysmac separates the
      declaration table from the body; the `.st` file has both in order.)
 2. Bind the I/O map (section 2 above).
-3. Assign `Main_<station>` to the PrimaryTask.
-4. Transfer and run (section 3).
+3. **Register the globals as Externals in `Main_*`** (hand-paste only — the XML
+   import carries these, pasting does not). A POU cannot see a global variable
+   until it is listed in that POU's variable table under the **Externals** tab:
+   open the `Main_<station>` variable table, switch from Internals to
+   **Externals**, and type every Name from the station tsv (data type fills in
+   automatically from the global). Without this, every global reference builds
+   as "undefined" even though the Global Variables table is correct. The FBs
+   need nothing — they only use their own interface variables.
+4. Assign `Main_<station>` to the PrimaryTask.
+5. Transfer and run (section 3).
 
 Files per station:
 

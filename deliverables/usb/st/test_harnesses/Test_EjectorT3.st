@@ -5,7 +5,7 @@
 PROGRAM Test_EjectorT3
 VAR Panel : FB_Panel; Ejector : FB_Actuator_T3; ROBUST : BOOL := FALSE; END_VAR
 
-Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
+Panel(s1_start := Panel_S1, s2_stop := NOT Panel_S2, (* Stop wired NC *) s4_reset := Panel_S4,
       error_in := ROBUST AND Ejector.error, reset_done := Ejector.at_home);
 Ejector(run_mode := Panel.run_mode, pause_mode := Panel.pause_mode,
     reset_mode := Panel.reset_mode, error_mode := Panel.error_mode,

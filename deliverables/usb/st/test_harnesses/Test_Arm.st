@@ -5,7 +5,7 @@
 PROGRAM Test_Arm
 VAR Panel : FB_Panel; Arm : FB_Actuator_T1; ROBUST : BOOL := FALSE; END_VAR
 
-Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
+Panel(s1_start := Panel_S1, s2_stop := NOT Panel_S2, (* Stop wired NC *) s4_reset := Panel_S4,
       error_in := ROBUST AND Arm.error, reset_done := Arm.at_home);
 Arm(run_mode := Panel.run_mode, pause_mode := Panel.pause_mode,
     reset_mode := Panel.reset_mode, error_mode := Panel.error_mode,

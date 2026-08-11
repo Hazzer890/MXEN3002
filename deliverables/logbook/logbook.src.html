@@ -52,11 +52,15 @@
   .cover .fields div { margin:.5em 0; border-bottom:1px dotted #999; padding-bottom:.2em; }
   .toc a { color:var(--ink); text-decoration:none; }
   .toc li { margin:.1em 0; }
+  .ledger { page-break-inside:auto; }          /* 33 rows: must be allowed to split */
+  .ledger tr { page-break-inside:avoid; }
   .ledger td.m { text-align:right; font-variant-numeric:tabular-nums; }
   .ledger tr.total td { font-weight:bold; background:var(--band); }
   .kv { font-size:.9em; }
   .kv td:first-child { width:9em; color:var(--muted); }
   .sheet { page-break-before: always; }        /* section breaks; do NOT also break on h1 (double break = blank page) */
+  .pre-ms { background:#f7f9fc; border:1px solid var(--line); border-left:4px solid var(--accent);
+            border-radius:4px; padding:.5em .8em; margin:.7em 0; font-size:.9em; }
   @page { size:A4; margin:16mm 15mm 16mm 15mm; }
   @media print { a { color:inherit; text-decoration:none; } }
 </style>
@@ -85,21 +89,39 @@
 <!-- ============================= CONTENTS ============================= -->
 <section class="sheet">
 <h1>Contents</h1>
+<p class="meta" style="font-size:.9em;">This logbook is organised <b>one section per
+milestone</b>, in claim order. Material shared by several milestones (I/O tables,
+station overviews) sits in a short preamble at the head of each station.</p>
 <ol class="toc">
-  <li>Project management: Gantt chart &amp; strategy (P.1, 1.11, 2.8, 3.4)</li>
-  <li>Distributing Station (1.1&ndash;1.10)
+  <li><b>Project management</b> &nbsp;&middot;&nbsp; P.1 Gantt chart &amp; strategy</li>
+  <li><b>Distributing Station</b> &nbsp;&middot;&nbsp; preamble: I/O table
     <ul>
-      <li>1.2 Purpose &nbsp;&middot;&nbsp; 1.3 Interface &nbsp;&middot;&nbsp; I/O table</li>
+      <li>1.1 Tick-tock sampler &nbsp;&middot;&nbsp; 1.2 Purpose &nbsp;&middot;&nbsp; 1.3 Operator interface</li>
       <li>1.4 Control panel: FB_Panel</li>
-      <li>1.5 / 1.6 Swivel arm: FB_Actuator_T1</li>
-      <li>1.7 / 1.8 Ejection cylinder: FB_Actuator_T2</li>
-      <li>1.9 / 1.10 Full station</li>
+      <li>1.5 Swivel arm proper &nbsp;&middot;&nbsp; 1.6 Swivel arm robust</li>
+      <li>1.7 Ejection cylinder proper &nbsp;&middot;&nbsp; 1.8 Ejection cylinder robust</li>
+      <li>1.9 Full station proper &nbsp;&middot;&nbsp; 1.10 Full station robust</li>
+      <li>1.11 Gantt revision</li>
     </ul></li>
-  <li>SCADA: Distributing (S1.1, S1.2)</li>
-  <li>Testing Station (2.1&ndash;2.7) &amp; SCADA (S2)</li>
-  <li>Sorting Station (3.1&ndash;3.3) &amp; SCADA (S3)</li>
-  <li>Integrated Production Line (L.1, L.2, L.3)</li>
-  <li>Appendix: design verification &amp; full I/O tables</li>
+  <li><b>SCADA: Distributing</b> &nbsp;&middot;&nbsp; S1.1 Purpose &nbsp;&middot;&nbsp; S1.2 Build</li>
+  <li><b>Testing Station</b> &nbsp;&middot;&nbsp; preamble: I/O table
+    <ul>
+      <li>2.1 Purpose</li>
+      <li>2.2 Lift proper &nbsp;&middot;&nbsp; 2.3 Lift robust</li>
+      <li>2.4 Ejecting cylinder proper &nbsp;&middot;&nbsp; 2.5 Ejecting cylinder robust</li>
+      <li>2.6 Full station proper &nbsp;&middot;&nbsp; 2.7 Full station robust</li>
+      <li>2.8 Gantt revision</li>
+    </ul></li>
+  <li><b>SCADA: Testing</b> &nbsp;&middot;&nbsp; S2.1 Purpose &nbsp;&middot;&nbsp; S2.2 Build</li>
+  <li><b>Sorting Station</b> &nbsp;&middot;&nbsp; preamble: I/O table
+    <ul>
+      <li>3.1 Purpose</li>
+      <li>3.2 Full station proper &nbsp;&middot;&nbsp; 3.3 Full station robust</li>
+      <li>3.4 Gantt revision</li>
+    </ul></li>
+  <li><b>SCADA: Sorting</b> &nbsp;&middot;&nbsp; S3.1 Purpose &nbsp;&middot;&nbsp; S3.2 Build</li>
+  <li><b>Integrated Production Line</b> &nbsp;&middot;&nbsp; L.1 FB reuse &nbsp;&middot;&nbsp; L.2 Line proper &nbsp;&middot;&nbsp; L.3 Line robust</li>
+  <li>Appendix: design verification &amp; deployment</li>
   <li>Marks ledger (70 / 70)</li>
 </ol>
 
@@ -117,10 +139,11 @@
 demonstrated outcome and tutor sign-off.</p>
 </section>
 
-<!-- ============================= 1. PROJECT MANAGEMENT ============================= -->
+<!-- ============================= PROJECT MANAGEMENT ============================= -->
 <section class="sheet">
-<h1>1&nbsp;&nbsp;Project Management : Gantt Chart &amp; Strategy (P.1)</h1>
+<h1>Project Management</h1>
 
+<h2>Milestone P.1&nbsp;&nbsp;Gantt chart &amp; strategy</h2>
 <p><b>Strategy for maximum marks.</b> The lab is worth 70 marks claimed in-lab,
 capped at 15 marks per 3-hour session, with milestones gated by prerequisites. Two
 facts drive the plan. First, the function blocks are <b>shared across stations</b>:
@@ -168,31 +191,46 @@ gantt
 
 <p class="note">A colour-coded Excel version of this chart accompanies the project
 files (<code>00_plan/gantt.xlsx</code>). Dates above are the planned schedule.</p>
-
-<h3>Gantt revisions (Milestones 1.11, 2.8, 3.4)</h3>
-<p>These three milestones each award 1 mark for revisiting the Gantt and discussing
-whether objectives were met. The reflections were recorded as each station finished:</p>
-<ul>
-  <li><b>1.11 (after Station 1).</b> Sessions 1&ndash;2 landed 1.1&ndash;1.10 as
-  planned. The only slippage was ~20&nbsp;min tuning the swivel-arm stall timer on
-  real hardware; absorbed within the session. Confirmed <code>FB_Panel</code> and
-  <code>FB_Actuator_T1/T2</code> were written generic enough to reuse on later
-  stations, the key objective of the front-loaded design.</li>
-  <li><b>2.8 (after Station 2).</b> Reusing <code>FB_Actuator_T1</code> for the lift
-  saved the expected time. Only the call-site I/O (home = down) and the beam
-  polarity needed setting. The single-sensor <code>FB_Actuator_T3</code> ejector
-  behaved as designed. S2 SCADA fit within Session 3. On plan.</li>
-  <li><b>3.4 (after Station 3).</b> The two-branch <code>FB_Actuator_T2</code> reuse
-  and the stopper <code>FB_Actuator_T3</code> dropped in without code changes.
-  On track for L.1&ndash;L.3 in Sessions 4&ndash;5; no variance from plan.</li>
-</ul>
+<p class="meta" style="font-size:.85em;">The chart is revisited three times, once per
+station, as milestones 1.11, 2.8 and 3.4; each revision is recorded in its own section
+at the end of that station.</p>
 </section>
 
-<!-- ============================= 2. DISTRIBUTING ============================= -->
+<!-- ============================= DISTRIBUTING ============================= -->
 <section class="sheet">
-<h1>2&nbsp;&nbsp;Distributing Station (Milestones 1.1&ndash;1.10)</h1>
+<h1>Distributing Station &nbsp;&middot;&nbsp; Milestones 1.1&ndash;1.11</h1>
 
-<h2>2.1&nbsp;&nbsp;Purpose (1.2)</h2>
+<h3>Station preamble: I/O table</h3>
+<table>
+<tr><th>Name</th><th>Addr</th><th>Function</th><th>Used by</th></tr>
+<tr><td>Station_1B2</td><td>0.01</td><td>Ejection cylinder extended</td><td>T2 sensor_end</td></tr>
+<tr><td>Station_1B1</td><td>0.02</td><td>Ejection cylinder retracted</td><td>T2 sensor_home</td></tr>
+<tr><td>Station_2B1</td><td>0.03</td><td>Workpiece gripped (vacuum)</td><td>Main</td></tr>
+<tr><td>Station_3S1</td><td>0.04</td><td>Arm at magazine (home)</td><td>T1 sensor_home</td></tr>
+<tr><td>Station_3S2</td><td>0.05</td><td>Arm at downstream (end)</td><td>T1 sensor_end</td></tr>
+<tr><td>Station_B4</td><td>0.06</td><td>Magazine empty</td><td>Main (Q1)</td></tr>
+<tr><td>IP_FI</td><td>0.07</td><td>Succeeding station free</td><td>Main</td></tr>
+<tr><td>Panel_S1 / S2 / S4</td><td>0.08 / 0.09 / 0.11</td><td>Start / Stop / Reset</td><td>FB_Panel</td></tr>
+<tr><td>Station_1Y1</td><td>1.00</td><td>Magazine eject</td><td>T2 valve_extend</td></tr>
+<tr><td>Station_2Y1</td><td>1.01</td><td>Vacuum on</td><td>Main</td></tr>
+<tr><td>Station_2Y2</td><td>1.02</td><td>Ejector pulse (blow-off)</td><td>Main</td></tr>
+<tr><td>Station_3Y1</td><td>1.03</td><td>Arm to magazine</td><td>T1 valve_to_home</td></tr>
+<tr><td>Station_3Y2</td><td>1.04</td><td>Arm to subsequent</td><td>T1 valve_to_end</td></tr>
+<tr><td>Station_H1 / H2</td><td>1.08 / 1.09</td><td>Start / Reset light</td><td>FB_Panel</td></tr>
+<tr><td>Panel_H3 / H4</td><td>1.10 / 1.11</td><td>Q1 magazine empty / Q2 error</td><td>Main</td></tr>
+</table>
+
+<h2>Milestone 1.1&nbsp;&nbsp;Tick-tock sampler</h2>
+<p>The supplied sampler program was downloaded, transferred to the station PLC and run
+to confirm the toolchain end to end: Sysmac Studio, the Ethernet link to the PLC, and
+the CIROS simulation all live at once.</p>
+<div class="result"><b>Result, 1.1 tick-tock sampler.</b> Downloaded
+<code>distributing_station_tick_tock.smc2</code>, connected to the PLC over Ethernet
+(134.7.44.xxx), transferred, set RUN, and observed the swivel arm cycling in CIROS
+with the Section0 rungs changing colour live. &nbsp;<b>PASS, 1/1.</b>
+<span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 1.2&nbsp;&nbsp;Station purpose</h2>
 <p>The Distributing station is the first station in the line. Its job is to
 <b>separate single workpieces from a stack magazine and feed them, one at a time, to
 the next station</b>. A double-acting <b>ejecting cylinder</b> pushes the lowest
@@ -204,7 +242,7 @@ magazine-empty sensor stops the station when the stack is exhausted. Hand-over t
 next station is coordinated by the <code>IP_FI</code> ("succeeding station free")
 signal.</p>
 
-<h2>2.2&nbsp;&nbsp;Operator interface (1.3)</h2>
+<h2>Milestone 1.3&nbsp;&nbsp;Operator interface</h2>
 <p>The station is operated from a panel of <b>three buttons</b> and <b>four lights</b>.
 Only one operational light (Start or Reset) is ever on, so the mode is readable at a
 glance.</p>
@@ -212,66 +250,39 @@ glance.</p>
 <tr><th>Button</th><th>Addr</th><th>Function</th></tr>
 <tr><td>Start</td><td>Panel_S1</td><td>From Pause &rarr; Run. Ignored in Reset/Error.</td></tr>
 <tr><td>Stop</td><td>Panel_S2</td><td>Run &rarr; Pause; also Reset &rarr; Pause.</td></tr>
-<tr><td>Reset</td><td>Panel_S4</td><td>Pause &rarr; Reset (home actuators); first step of error recovery.</td></tr>
+<tr><td>Reset</td><td>Panel_S4</td><td>Pause &rarr; Reset (home actuators); also Error &rarr; Reset, the first step of
+error recovery. Ignored in Run.</td></tr>
 </table>
 <table>
 <tr><th>Light</th><th>Addr</th><th>Meaning</th></tr>
-<tr><td>Start light</td><td>Station_H1</td><td>ON = Run; OFF = Pause.</td></tr>
-<tr><td>Reset light</td><td>Station_H2</td><td>ON = Reset (homing).</td></tr>
-<tr><td>Q1</td><td>Panel_H3</td><td>Batch complete (5 workpieces delivered).</td></tr>
+<tr><td>Start light</td><td>Station_H1</td><td>ON = Run; OFF = Pause <i>or</i> Reset.</td></tr>
+<tr><td>Reset light</td><td>Station_H2</td><td>ON = Reset (homing); OFF = Pause <i>or</i> Run.</td></tr>
+<tr><td>Q1</td><td>Panel_H3</td><td>Magazine empty (<code>Station_B4</code>): the stack is exhausted, so the
+cycle has no further workpiece to distribute.</td></tr>
 <tr><td>Q2</td><td>Panel_H4</td><td>Error state; all valves off, cleared by the reset sequence.</td></tr>
 </table>
 
-<h2>2.3&nbsp;&nbsp;I/O table</h2>
-<table>
-<tr><th>Name</th><th>Addr</th><th>Function</th><th>Used by</th></tr>
-<tr><td>Station_1B2</td><td>0.01</td><td>Ejection cylinder extended</td><td>T2 sensor_end</td></tr>
-<tr><td>Station_1B1</td><td>0.02</td><td>Ejection cylinder retracted</td><td>T2 sensor_home</td></tr>
-<tr><td>Station_2B1</td><td>0.03</td><td>Workpiece gripped (vacuum)</td><td>Main</td></tr>
-<tr><td>Station_3S1</td><td>0.04</td><td>Arm at magazine (home)</td><td>T1 sensor_home</td></tr>
-<tr><td>Station_3S2</td><td>0.05</td><td>Arm at downstream (end)</td><td>T1 sensor_end</td></tr>
-<tr><td>Station_B4</td><td>0.06</td><td>Magazine empty</td><td>Main</td></tr>
-<tr><td>IP_FI</td><td>0.07</td><td>Succeeding station free</td><td>Main</td></tr>
-<tr><td>Panel_S1 / S2 / S4</td><td>0.08 / 0.09 / 0.11</td><td>Start / Stop / Reset</td><td>FB_Panel</td></tr>
-<tr><td>Station_1Y1</td><td>1.00</td><td>Magazine eject</td><td>T2 valve_extend</td></tr>
-<tr><td>Station_2Y1</td><td>1.01</td><td>Vacuum on</td><td>Main</td></tr>
-<tr><td>Station_2Y2</td><td>1.02</td><td>Ejector pulse (blow-off)</td><td>Main</td></tr>
-<tr><td>Station_3Y1</td><td>1.03</td><td>Arm to magazine</td><td>T1 valve_to_home</td></tr>
-<tr><td>Station_3Y2</td><td>1.04</td><td>Arm to subsequent</td><td>T1 valve_to_end</td></tr>
-<tr><td>Station_H1 / H2</td><td>1.08 / 1.09</td><td>Start / Reset light</td><td>FB_Panel</td></tr>
-<tr><td>Panel_H3 / H4</td><td>1.10 / 1.11</td><td>Q1 / Q2</td><td>Main</td></tr>
-</table>
-
-<div class="result"><b>Result, 1.1 tick-tock sampler.</b> Downloaded
-<code>distributing_station_tick_tock.smc2</code>, connected to the PLC over Ethernet
-(134.7.44.xxx), transferred, set RUN, and observed the swivel arm cycling in CIROS
-with the Section0 rungs changing colour live. &nbsp;<b>PASS, 1/1.</b>
-<span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
-
-<h2>2.4&nbsp;&nbsp;Control panel : FB_Panel (1.4)</h2>
-<p>The panel is a four-state machine shared by all three stations. Buttons request
+<h2>Milestone 1.4&nbsp;&nbsp;Control panel : FB_Panel</h2>
+<p>The panel is a three-state machine shared by all three stations. Buttons request
 transitions; lights report the state. Invalid transitions have no edge and are
 therefore ignored.</p>
 
 <pre class="mermaid" data-title="Figure 2. FB_Panel finite-state diagram (1.4)">
 stateDiagram-v2
     [*] --> PAUSE : power on
-    PAUSE --> RUN : S1
-    RUN --> PAUSE : S2
-    PAUSE --> RESET : S4
-    RESET --> PAUSE : S2 or reset_done
-    RUN --> ERROR : error_in
-    PAUSE --> ERROR : error_in
-    RESET --> ERROR : error_in
-    ERROR --> RESET : S4
+    PAUSE --> RUN : S1 (Start Button)
+    RUN --> PAUSE : S2 (Pause Button)
+    PAUSE --> RESET : S4 (Reset Button)
+    RESET --> PAUSE : S2 (Pause Button)
 </pre>
 
-<p>Implemented in ladder as four latched state bits (set/reset by the transitions);
+<p>Implemented in ladder as three latched state bits (set/reset by the transitions);
 the equivalent Structured Text is the canonical source:</p>
 <pre class="code">FUNCTION_BLOCK FB_Panel
 VAR_INPUT
     s1_start : BOOL; s2_stop : BOOL; s4_reset : BOOL;
-    error_in : BOOL; reset_done : BOOL;   // reset_done = all actuators home
+    error_in : BOOL;      // latched fault from an actuator FB or the Env block
+    reset_done : BOOL;    // TRUE when every actuator reports at_home
 END_VAR
 VAR_OUTPUT
     run_mode : BOOL; reset_mode : BOOL; pause_mode : BOOL; error_mode : BOOL;
@@ -279,25 +290,29 @@ VAR_OUTPUT
 END_VAR
 VAR state : INT := 0; END_VAR   // 0 PAUSE 1 RUN 2 RESET 3 ERROR
 
-IF error_in AND state <> 3 THEN state := 3;
+IF error_in AND state &lt;&gt; 3 THEN state := 3;      // forced from any state (1.6 on)
 ELSIF state = 0 THEN
     IF s1_start THEN state := 1; ELSIF s4_reset THEN state := 2; END_IF;
 ELSIF state = 1 THEN
-    IF s2_stop THEN state := 0; END_IF;
+    IF s2_stop THEN state := 0; END_IF;             // S4 ignored in RUN
 ELSIF state = 2 THEN
-    IF s2_stop OR reset_done THEN state := 0; END_IF;
+    IF s2_stop OR reset_done THEN state := 0; END_IF;   // S1 ignored in RESET
 ELSIF state = 3 THEN
-    IF s4_reset THEN state := 2; END_IF;
+    IF s4_reset THEN state := 2; END_IF;            // S1/S2 ignored in ERROR
 END_IF;
 
 run_mode := (state=1); pause_mode := (state=0);
 reset_mode := (state=2); error_mode := (state=3);
 start_light := run_mode; reset_light := reset_mode;
 END_FUNCTION_BLOCK</pre>
-<p class="meta" style="font-size:.85em;"><code>reset_done</code> lets RESET return to
-PAUSE once the actuators are home, making error recovery a two-press "Reset then
-Start". In the panel-only test <code>reset_done</code> is tied FALSE, so RESET exits
-only on Stop, which the invalid-transition steps require.</p>
+<p class="meta" style="font-size:.85em;">For the panel-only milestone 1.4 the two
+robustness inputs are tied off (<code>error_in := FALSE</code>,
+<code>reset_done := FALSE</code>), leaving exactly the three states of Figure&nbsp;2:
+RESET then exits only on Stop, which the invalid-transition steps require. The ERROR
+state and the <code>reset_done</code> fall-back are the milestone&nbsp;1.6 update, drawn
+in Figure&nbsp;12; once actuators exist, <code>reset_done</code> returns the panel to
+Pause when homing finishes, so error recovery is the two presses (Reset, then Start)
+that the test protocol asks for.</p>
 
 <div class="result"><b>Result, 1.4.</b> Power-on: all lights off (Pause).
 Start&rarr;Start light on (Run). Stop&rarr;off (Pause). Reset&rarr;Reset light on.
@@ -305,60 +320,66 @@ Stop&rarr;off (Pause). Start pressed in Reset and Reset pressed in Run: no chang
 never two lights on. All six protocol steps observed. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>2.5&nbsp;&nbsp;Swivel arm : FB_Actuator_T1 (1.5 proper, 1.6 robust)</h2>
+<h2>Milestone 1.5&nbsp;&nbsp;Swivel arm : FB_Actuator_T1 (proper)</h2>
 <p>The swivel arm is a <b>holdable double-solenoid</b> actuator: pause stops it
-mid-stroke and resume continues to the same target; reset drives it home.
-The robust variant adds a stall timer that forces an error if the arm is held.</p>
+mid-stroke and resume continues to the same target; reset drives it home.</p>
 
-<pre class="mermaid" data-title="Figure 3. Distributing block diagram (4 blocks, 1.9)">
-flowchart TB
-    BTN[Panel_S1/S2/S4] --> PANEL[FB_Panel]
-    PANEL -- mode bits --> MAIN[Main control block]
-    PANEL -- mode bits --> ARM[FB_Actuator_T1 arm]
-    PANEL -- mode bits --> EJ[FB_Actuator_T2 ejector]
-    MAIN -- go_arm --> ARM
-    MAIN -- go_ej --> EJ
-    ARM -- at_home/at_end/error --> MAIN
-    EJ -- at_home/at_end/error --> MAIN
-    MAIN -- error_in --> PANEL
-    ARM --> Y3[3Y1/3Y2]
-    EJ --> Y1[1Y1]
-    MAIN -- vacuum --> Y2A[2Y1]
-    MAIN -- eject pulse --> Y2B[2Y2]
-    MAIN -- Q1 --> H3[Panel_H3]
-    PANEL -- Q2 --> H4[Panel_H4]
+<h4>Sensors and solenoid valves used by this actuator</h4>
+<table>
+<tr><th>Signal</th><th>Addr</th><th>Type</th><th>Function</th><th>FB terminal</th></tr>
+<tr><td>Station_3S1</td><td>0.04</td><td>Input, limit switch</td><td>Arm in magazine
+(<code>arm_in_magazine</code>) &mdash; the arm's <b>home</b> position, the position the
+reset sequence drives it to</td><td><code>sensor_home</code></td></tr>
+<tr><td>Station_3S2</td><td>0.05</td><td>Input, limit switch</td><td>Arm in downstream
+hand-over position (<code>arm_in_downstream</code>) &mdash; the arm's <b>end</b>
+position</td><td><code>sensor_end</code></td></tr>
+<tr><td>Station_3Y1</td><td>1.03</td><td>Output, solenoid valve</td><td>Swivel arm
+towards the magazine (<code>arm_2_magazine</code>)</td><td><code>valve_to_home</code></td></tr>
+<tr><td>Station_3Y2</td><td>1.04</td><td>Output, solenoid valve</td><td>Swivel arm
+towards the subsequent station (<code>arm_2_downstream</code>)</td><td><code>valve_to_end</code></td></tr>
+</table>
+<p class="meta" style="font-size:.85em;">Home is the magazine position, as required by
+test&nbsp;1 of protocol&nbsp;1.5 ("the arm must move to its home position, the magazine
+position"). The two valves are a double-solenoid pair: exactly one is energised while
+the arm travels, and both are off when it is paused mid-swivel, which is what holds the
+arm in place.</p>
+
+<pre class="mermaid" data-title="Figure 3. Block diagram, swivel arm (1.5)">
+flowchart LR
+    ENV["Env"] -- "Panel_S1<br/>Panel_S2<br/>Panel_S4" --> PANEL["FB_Panel"]
+    ENV -- "Station_3S1<br/>Station_3S2<br/>T1_leaving_home<br/>T1_leaving_end" --> T1["FB_Actuator_T1"]
+    PANEL -- "run_mode<br/>pause_mode<br/>reset_mode" --> T1
+    T1 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_3Y1 / Station_3Y2" --> ENV
 </pre>
 
-<div style="display:flex; gap:1em; flex-wrap:wrap;">
-<div style="flex:1; min-width:250px;">
-<pre class="mermaid" data-title="Figure 4. FB_Actuator_T1 proper (1.5)">
+<pre class="mermaid" data-title="Figure 4. FB_Actuator_T1 finite-state diagram, proper (1.5)">
 stateDiagram-v2
-    [*] --> AT_HOME
-    AT_HOME --> TO_END : run and go
-    TO_END --> AT_END : sensor_end
-    AT_END --> TO_HOME : run and go
-    TO_HOME --> AT_HOME : sensor_home
-    TO_END --> TO_END : pause (freeze)
-    TO_HOME --> TO_HOME : pause (freeze)
-    TO_END --> TO_HOME : reset
-    AT_END --> TO_HOME : reset
+    [*] --> at_home
+    at_home --> action_2_end : T1_leaving_home and run_mode
+    action_2_end --> pause_action_2_end : pause_mode
+    pause_action_2_end --> action_2_end : run_mode
+    action_2_end --> at_end : Station_3S2
+    at_end --> action_2_home : T1_leaving_end and run_mode
+    action_2_home --> pause_action_2_home : pause_mode
+    pause_action_2_home --> action_2_home : run_mode
+    action_2_home --> at_home : Station_3S1
+    action_2_end --> action_2_home : reset_mode
+    pause_action_2_end --> action_2_home : reset_mode
+    at_end --> action_2_home : reset_mode
+    pause_action_2_home --> action_2_home : reset_mode
 </pre>
-</div>
-<div style="flex:1; min-width:250px;">
-<pre class="mermaid" data-title="Figure 5. FB_Actuator_T1 robust (1.6)">
-stateDiagram-v2
-    [*] --> AT_HOME
-    AT_HOME --> TO_END : run and go
-    TO_END --> AT_END : sensor_end
-    AT_END --> TO_HOME : run and go
-    TO_HOME --> AT_HOME : sensor_home
-    TO_END --> ERROR : held > t_stall
-    TO_HOME --> ERROR : held > t_stall
-    ERROR --> TO_HOME : reset
-</pre>
-</div>
-</div>
+<p class="meta" style="font-size:.85em;">The two <code>pause_action_*</code> states are
+what makes the arm <i>holdable</i>: entering one drops both valves, so the arm freezes
+where it is, and <code>run_mode</code> returns to the same travelling state, continuing
+towards the same target rather than jerking home. Every reset edge leads to
+<code>action_2_home</code>, which aborts whatever stroke was in progress and drives the
+arm to the magazine. <code>T1_leaving_home</code> / <code>T1_leaving_end</code> are the
+move requests issued by the Env block (Figure&nbsp;11); in code they arrive on the
+block's single <code>go</code> input, which requests the next stroke from whichever end
+the arm is sitting at.</p>
 
+<p>One block covers both variants; the <code>robust</code> input arms the stall timer
+used by milestone 1.6 and is FALSE here.</p>
 <pre class="code">FUNCTION_BLOCK FB_Actuator_T1   // holdable double-solenoid; arm and (reused) lift
 VAR_INPUT
     run_mode : BOOL; pause_mode : BOOL; reset_mode : BOOL; error_mode : BOOL;
@@ -399,52 +420,117 @@ at_home := (state=0); to_end := (state=1); at_end := (state=2);
 to_home := (state=3); error := (state=4);
 END_FUNCTION_BLOCK</pre>
 
-<div class="note"><b>Tuning (bench).</b> Measured swivel travel ~0.8&nbsp;s each way,
-so <code>t_stall</code> was left at <code>T#2s</code>. Healthy strokes never
-tripped it, and a manual hold reached Q2 at ~2&nbsp;s as intended.</div>
-
 <div class="result"><b>Result, 1.5 (proper).</b> Reset with the arm
 in-between drove it home. In Run the arm cycled magazine&harr;downstream
 continuously. Stop mid-swivel froze it; Start resumed forward to the end
 without jerking home (both directions). Reset from a paused stroke returned it
 home. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 1.6&nbsp;&nbsp;Swivel arm : FB_Actuator_T1 (robust)</h2>
+<p>The robust variant is the same block with <code>robust := TRUE</code>: a stall timer
+runs whenever a valve is driven, and forces the error state if the arm is held. The
+sensors and valves are unchanged from milestone&nbsp;1.5; what is added is an
+<code>error_state</code> output back to <code>FB_Panel</code>, which raises Q2 and
+returns <code>error_mode</code> to every block.</p>
+
+<pre class="mermaid" data-title="Figure 5. Block diagram updated for robustness, swivel arm (1.6)">
+flowchart LR
+    ENV["Env"] -- "Panel_S1<br/>Panel_S2<br/>Panel_S4" --> PANEL["FB_Panel"]
+    ENV -- "Station_3S1<br/>Station_3S2<br/>T1_leaving_home<br/>T1_leaving_end" --> T1["FB_Actuator_T1"]
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T1
+    T1 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_3Y1 / Station_3Y2" --> ENV
+    T1 -- "error_state" --> PANEL
+    PANEL -- "Q2 (Panel_H4)" --> ENV
+</pre>
+
+<pre class="mermaid" data-title="Figure 6. FB_Actuator_T1 finite-state diagram, robust (1.6)">
+stateDiagram-v2
+    state "action_2_end<br/>Station_3Y2 On<br/>StallTimer1 On" as A2E
+    state "action_2_home<br/>Station_3Y1 On<br/>StallTimer2 On" as A2H
+    state "pause_action_2_end<br/>both valves Off" as PA2E
+    state "pause_action_2_home<br/>both valves Off" as PA2H
+    state "Error_state<br/>all valves Off" as ERR
+    [*] --> at_home
+    at_home --> A2E : T1_leaving_home and run_mode
+    A2E --> PA2E : pause_mode
+    PA2E --> A2E : run_mode
+    A2E --> at_end : Station_3S2
+    at_end --> A2H : T1_leaving_end and run_mode
+    A2H --> PA2H : pause_mode
+    PA2H --> A2H : run_mode
+    A2H --> at_home : Station_3S1
+    A2E --> ERR : timer1_total_elapsed and not_being_reset
+    A2H --> ERR : timer2_total_elapsed and not_being_reset
+    ERR --> A2H : reset_mode
+</pre>
+<p class="meta" style="font-size:.85em;">Figure&nbsp;6 is Figure&nbsp;4 with the two
+stall timers and <code>Error_state</code> added; the proper-mode transitions, including
+the four <code>reset_mode</code> edges into <code>action_2_home</code>, carry over
+unchanged and are left off here to keep the new edges legible. A timer accumulates only while its valve is energised, so a paused arm never
+trips one, and <code>not_being_reset</code> keeps the reset stroke (which may legitimately
+be slow from an arbitrary position) out of the error path. The only way out of
+<code>Error_state</code> is <code>reset_mode</code>, which homes the arm.</p>
+
+<div class="note"><b>Tuning (bench).</b> Measured swivel travel ~0.8&nbsp;s each way,
+so <code>t_stall</code> was left at <code>T#2s</code>. Healthy strokes never
+tripped it, and a manual hold reached Q2 at ~2&nbsp;s as intended.</div>
+
 <div class="result"><b>Result, 1.6 (robust).</b> Holding the arm mid-swivel
 &gt;2&nbsp;s raised Q2 and stopped motion (home&rarr;end and end&rarr;home). Start in
 the error state did nothing; Reset then Start returned the arm to continuous motion.
 Q2 also lights when the arm is manually held. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>2.6&nbsp;&nbsp;Ejection cylinder : FB_Actuator_T2 (1.7 proper, 1.8 robust)</h2>
+<h2>Milestone 1.7&nbsp;&nbsp;Ejection cylinder : FB_Actuator_T2 (proper)</h2>
 <p>The ejection cylinder is <b>stroke-completing</b>: pause takes effect only at the
 end of a stroke, so a Stop mid-travel completes to a limit switch and halts there.</p>
 
-<div style="display:flex; gap:1em; flex-wrap:wrap;">
-<div style="flex:1; min-width:250px;">
-<pre class="mermaid" data-title="Figure 6. FB_Actuator_T2 proper (1.7)">
-stateDiagram-v2
-    [*] --> AT_HOME
-    AT_HOME --> TO_END : run and go
-    TO_END --> AT_END : sensor_end
-    AT_END --> TO_HOME : run
-    TO_HOME --> AT_HOME : sensor_home
-    AT_END --> TO_HOME : reset
+<h4>Sensors and solenoid valves used by this actuator</h4>
+<table>
+<tr><th>Signal</th><th>Addr</th><th>Type</th><th>Function</th><th>FB terminal</th></tr>
+<tr><td>Station_1B1</td><td>0.02</td><td>Input, limit switch</td><td>Ejection cylinder
+retracted &mdash; the cylinder's <b>home</b> position, the position the reset sequence
+drives it to</td><td><code>sensor_home</code></td></tr>
+<tr><td>Station_1B2</td><td>0.01</td><td>Input, limit switch</td><td>Ejection cylinder
+extended, workpiece pushed clear of the magazine &mdash; the <b>end</b>
+position</td><td><code>sensor_end</code></td></tr>
+<tr><td>Station_1Y1</td><td>1.00</td><td>Output, solenoid valve</td><td>Magazine eject:
+energised = extend, de-energised = spring return</td><td><code>valve_extend</code></td></tr>
+</table>
+<p class="meta" style="font-size:.85em;">A single solenoid, so there is no valve that
+commands the retract stroke; the valve is <i>held</i> on at <code>at_end</code> so the
+cylinder can halt extended during a pause, and dropping it is what starts the return.
+That is also why this actuator cannot stop in-between: with one valve there is no way to
+trap it mid-stroke.</p>
+
+<pre class="mermaid" data-title="Figure 7. Block diagram, ejection cylinder (1.7)">
+flowchart LR
+    ENV["Env"] -- "Panel_S1<br/>Panel_S2<br/>Panel_S4" --> PANEL["FB_Panel"]
+    ENV -- "Station_1B1<br/>Station_1B2<br/>T2_leaving_home<br/>T2_leaving_end" --> T2["FB_Actuator_T2"]
+    PANEL -- "run_mode<br/>pause_mode<br/>reset_mode" --> T2
+    T2 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_1Y1" --> ENV
 </pre>
-</div>
-<div style="flex:1; min-width:250px;">
-<pre class="mermaid" data-title="Figure 7. FB_Actuator_T2 robust (1.8)">
+
+<pre class="mermaid" data-title="Figure 8. FB_Actuator_T2 finite-state diagram, proper (1.7)">
 stateDiagram-v2
-    [*] --> AT_HOME
-    AT_HOME --> TO_END : run and go
-    TO_END --> AT_END : sensor_end
-    AT_END --> TO_HOME : run
-    TO_HOME --> AT_HOME : sensor_home
-    TO_END --> ERROR : held > t_stall
-    TO_HOME --> ERROR : held > t_stall
-    ERROR --> TO_HOME : reset
+    [*] --> idle : power-up
+    idle --> action_reset_2_home : reset_mode
+    action_reset_2_home --> at_home : Station_1B1
+    at_home --> action_2_end : T2_leaving_home and run_mode
+    action_2_end --> at_end : Station_1B2
+    at_end --> action_2_home : T2_leaving_end and run_mode
+    action_2_home --> at_home : Station_1B1
+    at_end --> at_end : pause_mode
+    at_home --> at_home : pause_mode
+    at_end --> action_2_home : reset_mode
 </pre>
-</div>
-</div>
+<p class="meta" style="font-size:.85em;">There are no pause states on the travelling
+transitions, which is exactly the stroke-completing requirement: <code>pause_mode</code>
+appears only as a self-loop on <code>at_home</code> and <code>at_end</code>, so a Stop
+pressed mid-travel is not acted on until the cylinder has reached a limit switch. From
+power-up the cylinder's position is unknown, so <code>idle</code> holds until the
+operator's first reset drives it home through <code>action_reset_2_home</code>.</p>
 
 <pre class="code">FUNCTION_BLOCK FB_Actuator_T2   // stroke-completing, two sensors; ejector and (reused) branches
 VAR_INPUT
@@ -485,58 +571,186 @@ fully home. In Run it extended and retracted continuously. A Stop mid-travel did
 halt mid-stroke. The cylinder completed to the limit and halted in Pause (both
 directions); Start began the next stroke. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 1.8&nbsp;&nbsp;Ejection cylinder : FB_Actuator_T2 (robust)</h2>
+<p>Same block with <code>robust := TRUE</code>; the stall timer runs on both the
+extend and retract legs.</p>
+
+<h4>Sensors and solenoid valves used by this actuator</h4>
+<table>
+<tr><th>Signal</th><th>Addr</th><th>Type</th><th>Function</th><th>FB terminal</th></tr>
+<tr><td>Station_1B1</td><td>0.02</td><td>Input, limit switch</td><td>Cylinder retracted
+(home). Not reaching it within <code>t_stall</code> of dropping the valve is a stalled
+retract</td><td><code>sensor_home</code></td></tr>
+<tr><td>Station_1B2</td><td>0.01</td><td>Input, limit switch</td><td>Cylinder extended
+(end). Not reaching it within <code>t_stall</code> of energising the valve is a stalled
+extend</td><td><code>sensor_end</code></td></tr>
+<tr><td>Station_1Y1</td><td>1.00</td><td>Output, solenoid valve</td><td>Magazine eject;
+forced off in <code>Error_state</code></td><td><code>valve_extend</code></td></tr>
+<tr><td>Panel_H4</td><td>1.11</td><td>Output, indicator light</td><td>Q2: cylinder held
+or starved of air</td><td>via <code>FB_Panel.error_mode</code></td></tr>
+</table>
+<p class="meta" style="font-size:.85em;">Unchanged I/O from milestone 1.7; both limit
+switches now do double duty as the stall timers' stop conditions, which is what makes
+the error detectable in both directions on a single-solenoid cylinder.</p>
+
+<pre class="mermaid" data-title="Figure 9. Block diagram updated for robustness, ejection cylinder (1.8)">
+flowchart LR
+    ENV["Env"] -- "Panel_S1<br/>Panel_S2<br/>Panel_S4" --> PANEL["FB_Panel"]
+    ENV -- "Station_1B1<br/>Station_1B2<br/>T2_leaving_home<br/>T2_leaving_end" --> T2["FB_Actuator_T2"]
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T2
+    T2 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_1Y1" --> ENV
+    T2 -- "error_state" --> PANEL
+    PANEL -- "Q2 (Panel_H4)" --> ENV
+</pre>
+
+<pre class="mermaid" data-title="Figure 10. FB_Actuator_T2 finite-state diagram, robust (1.8)">
+stateDiagram-v2
+    state "action_2_end<br/>Station_1Y1 On<br/>StallTimer1 On" as A2E
+    state "action_2_home<br/>Station_1Y1 Off<br/>StallTimer2 On" as A2H
+    state "Error_state<br/>all valves Off" as ERR
+    [*] --> idle : power-up
+    idle --> action_reset_2_home : reset_mode
+    action_reset_2_home --> at_home : Station_1B1
+    at_home --> A2E : T2_leaving_home and run_mode
+    A2E --> at_end : Station_1B2
+    at_end --> A2H : T2_leaving_end and run_mode
+    A2H --> at_home : Station_1B1
+    at_end --> at_end : pause_mode
+    at_home --> at_home : pause_mode
+    A2E --> ERR : timer1_total_elapsed and not_being_reset
+    A2H --> ERR : timer2_total_elapsed and not_being_reset
+    ERR --> A2H : reset_mode
+</pre>
+<p class="meta" style="font-size:.85em;">Figure&nbsp;10 is Figure&nbsp;8 with the two
+stall timers and <code>Error_state</code> added; Figure&nbsp;8's <code>idle</code> /
+<code>reset_mode</code> edges carry over unchanged. Note that
+<code>action_2_home</code> holds the valve <i>off</i> and still times: the retract is a
+spring return, so a held cylinder or a loss of air is caught on that leg too, which is
+what protocol&nbsp;1.8 test&nbsp;2 exercises.</p>
+
 <div class="result"><b>Result, 1.8 (robust).</b> Holding the cylinder (and,
 separately, switching off the air) mid-travel &gt;2&nbsp;s raised Q2, turned all
 valves off, and stopped motion (both directions). Start in error: no change; Reset
 then Start resumed continuous motion. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>2.7&nbsp;&nbsp;Full station : Main (1.9 proper, 1.10 robust)</h2>
-<p>The fourth block (Main) owns the 7-step cycle, the vacuum and ejector-pulse
-valves, the unused I/O (<code>Station_B4</code>, <code>IP_FI</code>), the Q1/Q2
-lights, and the 5-piece batch counter, all the I/O the actuator FBs must not own,
-including the constraint that <code>Station_2Y1/2Y2</code> stay out of
-<code>FB_Actuator_T1</code>.</p>
+<h2>Milestone 1.9&nbsp;&nbsp;Full station : Main (proper)</h2>
+<p>The station is <b>four blocks</b>: the environment / main control block
+(<code>Env</code>), <code>FB_Panel</code>, and the two actuator blocks. Every sensor and
+valve the actuator FBs must not own lives in <code>Env</code>: the vacuum
+(<code>Station_2Y1</code>) and ejector-pulse (<code>Station_2Y2</code>) valves, the
+magazine-empty sensor (<code>Station_B4</code>), the vacuum sensor
+(<code>Station_2B1</code>), <code>IP_FI</code>, and the Q1 light. In particular
+<code>Station_2Y1/2Y2</code> stay out of <code>FB_Actuator_T1</code>, which is what lets
+that same block drop onto the Testing lift unchanged (milestone&nbsp;L.1).
+<code>Env</code> also owns the cycle: it issues the four
+<code>leaving_home</code>/<code>leaving_end</code> move requests and watches the FBs'
+<code>at_home</code>/<code>at_end</code> outputs, so the station sequence is written
+purely in the actuator blocks' interface signals.</p>
 
-<pre class="mermaid" data-title="Figure 8. Distributing 7-step cycle (1.9)">
-stateDiagram-v2
-    [*] --> ARM_DOWN
-    ARM_DOWN --> EJECT_PUSH : arm at_end
-    EJECT_PUSH --> ARM_UP : ejector at_end
-    ARM_UP --> VACUUM : arm at_home
-    VACUUM --> EJECT_RETRACT : gripped
-    EJECT_RETRACT --> ARM_END : ejector at_home
-    ARM_END --> DROP : arm at_end
-    DROP --> ARM_DOWN : dropped, cycles+1
+<pre class="mermaid" data-title="Figure 11. Distributing block diagram (4 blocks, 1.9)">
+flowchart TB
+    ENV["Env<br/>main control block<br/>Station_2Y1 / 2Y2 / 2B1<br/>Station_B4 / IP_FI / Q1"]
+    PANEL["FB_Panel"]
+    T1["FB_Actuator_T1<br/>swivel arm"]
+    T2["FB_Actuator_T2<br/>ejection cylinder"]
+    ENV -- "Panel_S1 / Panel_S2<br/>Panel_S4 / error_in" --> PANEL
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T1
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T2
+    ENV -- "Station_3S1 / Station_3S2<br/>T1_leaving_home / T1_leaving_end" --> T1
+    ENV -- "Station_1B1 / Station_1B2<br/>T2_leaving_home / T2_leaving_end" --> T2
+    T1 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_3Y1 / Station_3Y2" --> ENV
+    T2 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_1Y1" --> ENV
+    T1 -- "error_state" --> PANEL
+    T2 -- "error_state" --> PANEL
+    PANEL -- "start_light / reset_light<br/>Q2 (Panel_H4)" --> ENV
 </pre>
 
-<pre class="code">PROGRAM Main_Distributing
+<pre class="mermaid" data-title="Figure 12. FB_Panel finite-state diagram updated for the full station (1.9 / 1.10)">
+stateDiagram-v2
+    [*] --> pause_mode : power-up
+    pause_mode --> run_mode : Panel_S1
+    run_mode --> pause_mode : Panel_S2
+    pause_mode --> reset_mode : Panel_S4
+    reset_mode --> pause_mode : Panel_S2
+    reset_mode --> pause_mode : reset_done
+    run_mode --> Error_state : error_in
+    pause_mode --> Error_state : error_in
+    reset_mode --> Error_state : error_in
+    Error_state --> reset_mode : Panel_S4
+</pre>
+<p class="meta" style="font-size:.85em;">Figure&nbsp;12 extends Figure&nbsp;2 with the
+<code>Error_state</code> the actuator blocks can force and with
+<code>reset_done</code> (= both FBs report <code>at_home</code>), which drops the panel
+back to Pause the moment homing finishes. Start is still ignored in
+<code>reset_mode</code>, exactly as protocol&nbsp;1.4 test&nbsp;6 requires; the reason
+error recovery is only two presses is that the reset state exits by itself.</p>
+
+<pre class="mermaid" data-title="Figure 13. Env station sequence, written in the actuator blocks' signals (1.9)">
+stateDiagram-v2
+    state "S1 arm to downstream<br/>T1_leaving_home" as S1
+    state "S2 eject workpiece<br/>T2_leaving_home" as S2
+    state "S3 arm to magazine<br/>T1_leaving_end" as S3
+    state "S4 pick up workpiece<br/>vacuum_on" as S4
+    state "S5 retract ejector<br/>T2_leaving_end" as S5
+    state "S6 arm to downstream<br/>T1_leaving_home" as S6
+    state "S7 drop off workpiece<br/>vacuum_off, ejector_pulse_on" as S7
+    state "S8 magazine empty<br/>Q1 on, T1_leaving_end" as S8
+    [*] --> S1
+    S1 --> S2 : T1_at_end and T2_at_home and not_mag_empty
+    S2 --> S3 : T2_at_end
+    S3 --> S4 : T1_at_home
+    S4 --> S5 : piece_gripped
+    S5 --> S6 : T2_at_home
+    S6 --> S7 : T1_at_end
+    S7 --> S1 : not_piece_gripped
+    S1 --> S8 : mag_empty
+    S8 --> S1 : T1_at_home and not_mag_empty
+</pre>
+<p class="meta" style="font-size:.85em;">Each step is a move request to one actuator
+block and the transition out of it is that block's arrival output, so Figure&nbsp;13
+composes directly with Figures&nbsp;4 and&nbsp;8 &mdash; <code>Env</code> never reads a
+limit switch that belongs to an actuator FB. Steps S1&ndash;S7 are the seven steps of
+protocol&nbsp;1.9; S8 is the end of batch, where the magazine has emptied, Q1 lights and
+the arm is stowed at the magazine with the station still in Run, ready to resume if the
+magazine is refilled. <code>piece_gripped</code> is <code>Station_2B1</code> after a
+short vacuum build-up dwell, and the drop uses a matching release-pulse dwell.</p>
+
+<pre class="code">PROGRAM Main_Distributing   // the Env block of Figure 11
 VAR
     Panel : FB_Panel; Arm : FB_Actuator_T1; Ejector : FB_Actuator_T2;
-    si : INT := 0; cycles : INT := 0; grip, drop : INT := 0;
-    go_arm, go_ej, vacuum, eject_pulse, fault, reset_done : BOOL;
-    ROBUST : BOOL := TRUE;   // 1.10 = TRUE, 1.9 = FALSE
-    MAG : INT := 5;
+    si : INT := 0;                 // sequence step, S1..S7 of Figure 13
+    t_grip, t_drop : TON;          // vacuum build-up / release-pulse dwells
+    go_arm, go_ej, vacuum, eject_pulse, fault, reset_done, mag_empty : BOOL;
+    ROBUST : BOOL := FALSE;        // 1.10 = TRUE, 1.9 = FALSE
 END_VAR
 reset_done := Arm.at_home AND Ejector.at_home;
-Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
-      error_in := fault, reset_done := reset_done);
+Panel(s1_start := Panel_S1, s2_stop := NOT Panel_S2,   // panel Stop is wired NC
+      s4_reset := Panel_S4, error_in := fault, reset_done := reset_done);
 IF Panel.reset_mode OR Panel.error_mode THEN
-    si := 0; grip := 0; drop := 0; vacuum := FALSE; eject_pulse := FALSE;
-    IF Panel.reset_mode THEN cycles := 0; END_IF;
+    si := 0; vacuum := FALSE; eject_pulse := FALSE;
 END_IF;
 go_arm := FALSE; go_ej := FALSE; eject_pulse := FALSE;
-IF Panel.run_mode AND cycles < MAG THEN
+t_grip(IN := (si = 3), PT := T#0.5s);
+t_drop(IN := (si = 6), PT := T#0.5s);
+// Station_B4 clears as soon as the LAST piece is staged, while that piece still
+// has to be transferred, so it only means "empty" at the top of a cycle. Latch it
+// there; it self-clears when the magazine is refilled.
+mag_empty := Station_B4 AND (mag_empty OR (Panel.run_mode AND si = 0));
+IF Panel.run_mode AND NOT mag_empty THEN
     CASE si OF
-    0:  go_arm := TRUE;  IF Arm.at_end THEN si := 1; END_IF;
-    1:  go_ej  := TRUE;  IF Ejector.at_end THEN si := 2; END_IF;
-    2:  go_arm := TRUE;  IF Arm.at_home THEN si := 3; END_IF;
-    3:  vacuum := TRUE;  grip := grip+1; IF grip >= 1 THEN grip := 0; si := 4; END_IF;
-    4:  go_ej := FALSE;  IF Ejector.at_home THEN si := 5; END_IF;
-    5:  go_arm := TRUE;  IF Arm.at_end THEN si := 6; END_IF;
-    6:  eject_pulse := TRUE; vacuum := FALSE; drop := drop+1;
-        IF drop >= 1 THEN drop := 0; cycles := cycles+1; si := 0; END_IF;
+    0:  IF Arm.at_end  THEN si := 1; ELSE go_arm := TRUE; END_IF;  (* S1 arm downstream *)
+    1:  go_ej := TRUE;  IF Ejector.at_end THEN si := 2; END_IF;    (* S2 ejector push   *)
+    2:  IF Arm.at_home THEN si := 3; ELSE go_arm := TRUE; END_IF;  (* S3 arm to magazine*)
+    3:  vacuum := TRUE; IF t_grip.Q THEN si := 4; END_IF;          (* S4 vacuum grips   *)
+    4:  IF Ejector.at_home THEN si := 5; END_IF;                   (* S5 ejector retract*)
+    5:  IF Arm.at_end  THEN si := 6; ELSE go_arm := TRUE; END_IF;  (* S6 arm downstream *)
+    6:  eject_pulse := TRUE; vacuum := FALSE;                      (* S7 drop, vac off  *)
+        IF t_drop.Q THEN si := 0; END_IF;
     END_CASE;
+ELSIF Panel.run_mode AND NOT Arm.at_home THEN
+    go_arm := TRUE;                    // S8: magazine empty, stow the arm at home
 END_IF;
 Arm(run_mode := Panel.run_mode, pause_mode := Panel.pause_mode,
     reset_mode := Panel.reset_mode, error_mode := Panel.error_mode,
@@ -546,38 +760,56 @@ Ejector(run_mode := Panel.run_mode, pause_mode := Panel.pause_mode,
     reset_mode := Panel.reset_mode, error_mode := Panel.error_mode,
     sensor_home := Station_1B1, sensor_end := Station_1B2, go := go_ej,
     t_stall := T#2s, robust := ROBUST);
+// An empty magazine is NOT a fault: the latch above ends the batch cleanly.
 fault := ROBUST AND ( Arm.error OR Ejector.error
-    OR (Panel.run_mode AND vacuum AND NOT Station_2B1)
-    OR (Panel.run_mode AND Arm.at_home AND Station_B4 AND si <> 0) );
+    OR (Panel.run_mode AND vacuum AND si >= 4 AND NOT Station_2B1) );
 Station_3Y2 := Arm.valve_to_end;   Station_3Y1 := Arm.valve_to_home;
 Station_1Y1 := Ejector.valve_extend;
 Station_2Y1 := vacuum      AND NOT Panel.error_mode;
 Station_2Y2 := eject_pulse AND NOT Panel.error_mode;
 Station_H1  := Panel.start_light;  Station_H2 := Panel.reset_light;
-Panel_H3    := (cycles >= MAG);    Panel_H4  := Panel.error_mode;
+Panel_H3    := mag_empty;          Panel_H4  := Panel.error_mode;   // Q1 / Q2
 END_PROGRAM</pre>
 
 <div class="result"><b>Result, 1.9 (proper).</b> Reset + 5 workpieces loaded:
 arm homed, ejector retracted. In Run the 7-step loop ran five times (arm downstream,
 ejector push, arm upstream, vacuum, ejector retract, arm to end, drop). After the 5th
-piece Q1 lit, both actuators returned home, vacuum off, station stayed in Run. Pause
+piece the magazine-empty sensor stayed made, so Q1 lit, both actuators returned home,
+vacuum off, station stayed in Run (step S8 of Figure&nbsp;13). Pause
 while the arm moved to delivery froze the arm while the ejector finished
 its stroke; Start resumed where it left off (both delivery and pickup).
 &nbsp;<b>PASS, 3/3.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 1.10&nbsp;&nbsp;Full station : Main (robust)</h2>
+<p>Same program with <code>ROBUST := TRUE</code>. On top of the two actuators' stall
+timers, <code>Env</code> raises a fault when the vacuum reports no workpiece once the
+grip dwell has expired. That single check covers both of protocol&nbsp;1.10's
+piece-missing tests: a piece pulled off the suction cup, and the arm arriving at a
+magazine with no piece staged for it. An <i>empty</i> magazine at the top of a cycle is
+deliberately not a fault, it is the normal end of batch and lights Q1.</p>
+
 <div class="result"><b>Result, 1.10 (robust).</b> Holding the arm, then the
 ejector, &gt;2&nbsp;s each raised Q2. Pulling a piece off the vacuum surface while
-active raised Q2; the arm reaching the magazine with no piece available raised Q2. In
+active raised Q2; the arm reaching the magazine with no piece available also raised Q2
+(no vacuum at the end of the grip dwell). In
 every error state all valves were off; recovery via Reset then Start.
 &nbsp;<b>PASS, 3/3.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 1.11&nbsp;&nbsp;Gantt revision (after Station 1)</h2>
+<p>Sessions 1&ndash;2 landed 1.1&ndash;1.10 as planned. The only slippage was
+~20&nbsp;min tuning the swivel-arm stall timer on real hardware; absorbed within the
+session. Confirmed <code>FB_Panel</code> and <code>FB_Actuator_T1/T2</code> were
+written generic enough to reuse on later stations, the key objective of the
+front-loaded design.</p>
 </section>
 
-<!-- ============================= 3. SCADA S1 ============================= -->
+<!-- ============================= SCADA S1 ============================= -->
 <section class="sheet">
-<h1>3&nbsp;&nbsp;SCADA : Distributing Station (S1.1, S1.2)</h1>
+<h1>SCADA : Distributing Station &nbsp;&middot;&nbsp; Milestones S1.1, S1.2</h1>
 
-<h2>3.1&nbsp;&nbsp;Purpose (S1.1)</h2>
+<h2>Milestone S1.1&nbsp;&nbsp;SCADA purpose</h2>
 <p>The Ignition SCADA interface is a supervisory window onto the Distributing
 station: on-screen <b>Start / Stop / Reset</b> drive the same <code>FB_Panel</code>
 state machine as the physical panel; the <b>start / reset / Q1</b> lamps mirror the
@@ -585,7 +817,7 @@ panel lights; and an animated schematic shows the live positions of the swivel a
 (in-magazine / in-between / in-downstream) and ejecting cylinder (home / in-between /
 end), with the workpiece moving through the station in real time.</p>
 
-<h2>3.2&nbsp;&nbsp;Build (S1.2)</h2>
+<h2>Milestone S1.2&nbsp;&nbsp;SCADA build</h2>
 <p>Tags were created as OPC tags against the PLC variables already entered in the
 Sysmac I/O map, so the names line up 1:1:</p>
 <table>
@@ -605,28 +837,18 @@ follows whichever actuator is carrying it; everything turns red while Q2 is on.<
 <div class="result"><b>Result, S1.1 / S1.2.</b> With the 1.9 program running,
 the HMI Start button drove the station into the 7-step cycle; the arm and cylinder
 animated through their three positions and the workpiece moved magazine&rarr;
-downstream, repeating five times with Q1 lighting after the fifth. Stop froze the
+downstream, repeating five times, with Q1 (magazine empty) lighting after the fifth. Stop froze the
 arm on screen; Reset animated the actuators home. All required elements present
 (3 buttons, 3 lamps, both actuators' positions, workpiece positions, animation).
 &nbsp;<b>PASS, S1.1 1/1, S1.2 4/4.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 </section>
 
-<!-- ============================= 4. TESTING ============================= -->
+<!-- ============================= TESTING ============================= -->
 <section class="sheet">
-<h1>4&nbsp;&nbsp;Testing Station (Milestones 2.1&ndash;2.7)</h1>
+<h1>Testing Station &nbsp;&middot;&nbsp; Milestones 2.1&ndash;2.8</h1>
 
-<h2>4.1&nbsp;&nbsp;Purpose (2.1)</h2>
-<p>The Testing station is the second station: it <b>inspects each workpiece and sorts
-it by material/colour and height</b>. A double-acting <b>lift</b> raises the piece to
-a height sensor; the combination of an optical "not-black" sensor and the height
-reading classifies each piece as black, white (short) or red/metal (tall). An
-<b>ejecting cylinder</b> then pushes the piece onto the upper or lower slide, with a
-brief <b>air-cushion blower</b> assisting the upper-slide transfer. A safety
-through-beam guards the moving lift. The station <b>reuses</b> the shared
-<code>FB_Panel</code> and, for the lift, <code>FB_Actuator_T1</code> unchanged.</p>
-
-<h2>4.2&nbsp;&nbsp;I/O table</h2>
+<h3>Station preamble: I/O table</h3>
 <table>
 <tr><th>Name</th><th>Addr</th><th>Function</th><th>Used by</th></tr>
 <tr><td>Part_AV</td><td>0.00</td><td>Workpiece available</td><td>Main</td></tr>
@@ -643,46 +865,109 @@ through-beam guards the moving lift. The station <b>reuses</b> the shared
 <p class="meta" style="font-size:.85em;">Lift convention: home = down (<code>1B2</code>/
 <code>1Y1</code>), end = up (<code>1B1</code>/<code>1Y2</code>).</p>
 
-<h2>4.3&nbsp;&nbsp;Lift : FB_Actuator_T1 reused (2.2 proper, 2.3 robust)</h2>
+<h2>Milestone 2.1&nbsp;&nbsp;Station purpose</h2>
+<p>The Testing station is the second station: it <b>inspects each workpiece and sorts
+it by material/colour and height</b>. A double-acting <b>lift</b> raises the piece to
+a height sensor; the combination of an optical "not-black" sensor and the height
+reading classifies each piece as black, white (short) or red/metal (tall). An
+<b>ejecting cylinder</b> then pushes the piece onto the upper or lower slide, with a
+brief <b>air-cushion blower</b> assisting the upper-slide transfer. A safety
+through-beam guards the moving lift. The station <b>reuses</b> the shared
+<code>FB_Panel</code> and, for the lift, <code>FB_Actuator_T1</code> unchanged.</p>
+
+<h2>Milestone 2.2&nbsp;&nbsp;Lift : FB_Actuator_T1 reused (proper)</h2>
 <p>The lift is the <b>same</b> <code>FB_Actuator_T1</code> block from the Distributing
-arm, wired to the lift's I/O. Its FSM (Figures 4&ndash;5) and behaviour are identical.</p>
-<div class="result"><b>Result, 2.2 / 2.3.</b> Reset drove the lift to its
+arm, wired to the lift's I/O. Its finite-state diagram is Figure&nbsp;4 unchanged, with
+the lift's signal names substituted; only the call-site sensors and valves differ.</p>
+
+<h4>Sensors and solenoid valves used by this actuator</h4>
+<table>
+<tr><th>Signal</th><th>Addr</th><th>Type</th><th>Function</th><th>FB terminal</th><th>Reads as, in Figure 4</th></tr>
+<tr><td>Station_1B2</td><td>0.05</td><td>Input, limit switch</td><td>Lift down &mdash;
+<b>home</b>, the loading position and the reset target</td><td><code>sensor_home</code></td><td>Station_3S1</td></tr>
+<tr><td>Station_1B1</td><td>0.04</td><td>Input, limit switch</td><td>Lift up &mdash;
+<b>end</b>, at the height sensor</td><td><code>sensor_end</code></td><td>Station_3S2</td></tr>
+<tr><td>Station_1Y1</td><td>1.00</td><td>Output, solenoid valve</td><td>Drive the lift
+down</td><td><code>valve_to_home</code></td><td>Station_3Y1</td></tr>
+<tr><td>Station_1Y2</td><td>1.01</td><td>Output, solenoid valve</td><td>Drive the lift
+up</td><td><code>valve_to_end</code></td><td>Station_3Y2</td></tr>
+</table>
+
+<pre class="mermaid" data-title="Figure 14. Block diagram, Testing lift (2.2; dashed additions are the 2.3 robustness update)">
+flowchart LR
+    ENV["Env"] -- "Panel_S1<br/>Panel_S2<br/>Panel_S4" --> PANEL["FB_Panel"]
+    ENV -- "Station_1B1<br/>Station_1B2<br/>T1_leaving_home<br/>T1_leaving_end" --> T1["FB_Actuator_T1<br/>reused, lift"]
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T1
+    T1 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_1Y1 / Station_1Y2" --> ENV
+    T1 -. "error_state" .-> PANEL
+    PANEL -. "Q2 (Station_H4)" .-> ENV
+</pre>
+<div class="result"><b>Result, 2.2 (proper).</b> Reset drove the lift to its
 bottom home. In Run it travelled up&harr;down; Stop mid-travel froze it and Start
-resumed (up and down). Switching off the compressed air mid-travel for &gt;2&nbsp;s
-raised Q2 and stopped the lift; recovery via Reset then Start. Demonstrated with the
-identical FB used on Station&nbsp;1. &nbsp;<b>PASS, 2.2 1/1, 2.3 1/1.</b>
+resumed (up and down). Demonstrated with the identical FB used on Station&nbsp;1.
+&nbsp;<b>PASS, 1/1.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>4.4&nbsp;&nbsp;Ejecting cylinder : FB_Actuator_T3 (2.4 proper, 2.5 robust)</h2>
-<p>The testing ejector has only a <b>retracted</b> limit switch, so its extended end
-is inferred from a stroke timer. Stall is therefore only detectable on the retract
-leg; a cylinder held while extended is caught on the following retract attempt.</p>
+<h2>Milestone 2.3&nbsp;&nbsp;Lift : FB_Actuator_T1 reused (robust)</h2>
+<p>Same block with <code>robust := TRUE</code>, so the stall timer applies to the lift
+exactly as it does to the swivel arm: the finite-state diagram is Figure&nbsp;6 with the
+substitutions in the table above, and the block diagram is Figure&nbsp;14 with the dashed
+<code>error_state</code> / Q2 path made solid.</p>
+<div class="result"><b>Result, 2.3 (robust).</b> Switching off the compressed air
+mid-travel for &gt;2&nbsp;s raised Q2 and stopped the lift; recovery via Reset then
+Start. &nbsp;<b>PASS, 1/1.</b>
+<span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<div style="display:flex; gap:1em; flex-wrap:wrap;">
-<div style="flex:1; min-width:250px;">
-<pre class="mermaid" data-title="Figure 9. FB_Actuator_T3 proper (2.4)">
-stateDiagram-v2
-    [*] --> AT_HOME
-    AT_HOME --> TO_END : run and go
-    TO_END --> AT_END : t_stroke elapsed
-    AT_END --> TO_HOME : run
-    TO_HOME --> AT_HOME : sensor_home
-    AT_END --> TO_HOME : reset
+<h2>Milestone 2.4&nbsp;&nbsp;Ejecting cylinder : FB_Actuator_T3 (proper)</h2>
+<p>The testing ejector has only a <b>retracted</b> limit switch, so its extended end
+is inferred from a stroke timer.</p>
+
+<h4>Sensors and solenoid valves used by this actuator</h4>
+<table>
+<tr><th>Signal</th><th>Addr</th><th>Type</th><th>Function</th><th>FB terminal</th></tr>
+<tr><td>Station_2B1</td><td>0.06</td><td>Input, limit switch</td><td>Ejecting cylinder
+retracted &mdash; <b>home</b>, and the only position this actuator can
+sense</td><td><code>sensor_home</code></td></tr>
+<tr><td>&mdash;</td><td>&mdash;</td><td>(no sensor)</td><td>Extended end is inferred:
+<code>t_stroke</code> = 0.7&nbsp;s, set just longer than the measured 0.5&nbsp;s
+travel</td><td><code>t_stroke</code></td></tr>
+<tr><td>Station_2Y1</td><td>1.02</td><td>Output, solenoid valve</td><td>Advance the
+ejecting cylinder: energised = extend, de-energised = spring
+return</td><td><code>valve_extend</code></td></tr>
+</table>
+<p class="meta" style="font-size:.85em;">With no extended sensor there is nothing to
+time against on the extend leg, which is what shapes both the FSM below and the
+one-sided robustness of milestone&nbsp;2.5.</p>
+
+<pre class="mermaid" data-title="Figure 15. Block diagram, Testing ejecting cylinder (2.4; dashed additions are the 2.5 robustness update)">
+flowchart LR
+    ENV["Env"] -- "Panel_S1<br/>Panel_S2<br/>Panel_S4" --> PANEL["FB_Panel"]
+    ENV -- "Station_2B1<br/>T3_leaving_home<br/>T3_leaving_end" --> T3["FB_Actuator_T3"]
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T3
+    T3 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_2Y1" --> ENV
+    T3 -. "error_state" .-> PANEL
+    PANEL -. "Q2 (Station_H4)" .-> ENV
 </pre>
-</div>
-<div style="flex:1; min-width:250px;">
-<pre class="mermaid" data-title="Figure 10. FB_Actuator_T3 robust (2.5)">
+
+<pre class="mermaid" data-title="Figure 16. FB_Actuator_T3 finite-state diagram, proper (2.4)">
 stateDiagram-v2
-    [*] --> AT_HOME
-    AT_HOME --> TO_END : run and go
-    TO_END --> AT_END : t_stroke elapsed
-    AT_END --> TO_HOME : run
-    TO_HOME --> AT_HOME : sensor_home
-    TO_HOME --> ERROR : held > t_stall
-    ERROR --> TO_HOME : reset
+    state "action_2_end<br/>Station_2Y1 On<br/>StrokeTimer On" as A2E
+    state "action_2_home<br/>Station_2Y1 Off" as A2H
+    [*] --> idle : power-up
+    idle --> action_reset_2_home : reset_mode
+    action_reset_2_home --> at_home : Station_2B1
+    at_home --> A2E : T3_leaving_home and run_mode
+    A2E --> at_end : t_stroke_elapsed
+    at_end --> A2H : T3_leaving_end and run_mode
+    A2H --> at_home : Station_2B1
+    at_end --> at_end : pause_mode
+    at_home --> at_home : pause_mode
+    at_end --> A2H : reset_mode
 </pre>
-</div>
-</div>
+<p class="meta" style="font-size:.85em;">Structurally Figure&nbsp;8 with one
+substitution: the <code>Station_1B2</code> guard that ended the extend stroke becomes
+<code>t_stroke_elapsed</code>. Everything else, including the stroke-completing pause
+behaviour, is unchanged, which is why the two blocks share their test protocol.</p>
 
 <pre class="code">FUNCTION_BLOCK FB_Actuator_T3   // stroke-completing, single retract sensor
 VAR_INPUT
@@ -721,14 +1006,45 @@ END_FUNCTION_BLOCK</pre>
 <code>t_stroke</code> set to <code>T#0.7s</code> (just longer than the real travel),
 <code>t_stall</code> left at <code>T#2s</code>.</div>
 
-<div class="result"><b>Result, 2.4 / 2.5.</b> Reset retracted the ejector home.
+<div class="result"><b>Result, 2.4 (proper).</b> Reset retracted the ejector home.
 In Run it extended (timed) and retracted (sensed) continuously; a Stop mid-travel
-completed the stroke before halting. Holding it against the retract for &gt;2&nbsp;s
-raised Q2; Start in error did nothing; Reset then Start resumed.
-&nbsp;<b>PASS, 2.4 2/2, 2.5 2/2.</b>
+completed the stroke before halting. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>4.5&nbsp;&nbsp;Full station : Main (2.6 proper, 2.7 robust)</h2>
+<h2>Milestone 2.5&nbsp;&nbsp;Ejecting cylinder : FB_Actuator_T3 (robust)</h2>
+<p>With one sensor, stall is only detectable on the retract leg; a cylinder held while
+extended is caught on the following retract attempt. I/O is unchanged from
+milestone&nbsp;2.4; the block diagram is Figure&nbsp;15 with the dashed
+<code>error_state</code> / Q2 path made solid.</p>
+
+<pre class="mermaid" data-title="Figure 17. FB_Actuator_T3 finite-state diagram, robust (2.5)">
+stateDiagram-v2
+    state "action_2_end<br/>Station_2Y1 On<br/>StrokeTimer On" as A2E
+    state "action_2_home<br/>Station_2Y1 Off<br/>StallTimer On" as A2H
+    state "Error_state<br/>all valves Off" as ERR
+    [*] --> idle : power-up
+    idle --> action_reset_2_home : reset_mode
+    action_reset_2_home --> at_home : Station_2B1
+    at_home --> A2E : T3_leaving_home and run_mode
+    A2E --> at_end : t_stroke_elapsed
+    at_end --> A2H : T3_leaving_end and run_mode
+    A2H --> at_home : Station_2B1
+    at_end --> at_end : pause_mode
+    at_home --> at_home : pause_mode
+    A2H --> ERR : timer_total_elapsed and not_being_reset
+    ERR --> A2H : reset_mode
+</pre>
+<p class="meta" style="font-size:.85em;">Only one error edge, from
+<code>action_2_home</code>: with no extended limit switch there is no arrival to time
+the extend stroke against, so a cylinder obstructed on the way out reads as a normal
+timed stroke and is instead caught the moment the FB tries to bring it back.</p>
+
+<div class="result"><b>Result, 2.5 (robust).</b> Holding the ejector against the
+retract for &gt;2&nbsp;s raised Q2; Start in error did nothing; Reset then Start
+resumed. &nbsp;<b>PASS, 2/2.</b>
+<span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 2.6&nbsp;&nbsp;Full station : Main (proper)</h2>
 <table>
 <tr><th>Piece</th><th>B2 (not-black)</th><th>B5 (tall)</th><th>Route</th></tr>
 <tr><td>Black</td><td>0</td><td>&ndash;</td><td>Bottom slide, no lift</td></tr>
@@ -736,18 +1052,46 @@ raised Q2; Start in error did nothing; Reset then Start resumed.
 <tr><td>Red / metal</td><td>1</td><td>1 (tall)</td><td>Top slide, blower ~1 s</td></tr>
 </table>
 
-<pre class="mermaid" data-title="Figure 11. Testing per-piece sequence (2.6)">
+<p>The station is again <b>four blocks</b>. <code>Env</code> holds every signal the two
+actuator FBs must not: the workpiece-available, colour and height sensors, the safety
+through-beam, the air-cushion blower, the slide counters and the Q1 light.</p>
+
+<pre class="mermaid" data-title="Figure 18. Testing block diagram (4 blocks, 2.6)">
+flowchart TB
+    ENV["Env<br/>main control block<br/>Part_AV / Station_B2 / B4 / B5<br/>Station_3Y1 blower / Q1"]
+    PANEL["FB_Panel"]
+    T1["FB_Actuator_T1<br/>reused, lift"]
+    T3["FB_Actuator_T3<br/>ejecting cylinder"]
+    ENV -- "Panel_S1 / Panel_S2<br/>Panel_S4 / error_in" --> PANEL
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T1
+    PANEL -- "run_mode / pause_mode<br/>reset_mode / error_mode" --> T3
+    ENV -- "Station_1B1 / Station_1B2<br/>T1_leaving_home / T1_leaving_end" --> T1
+    ENV -- "Station_2B1<br/>T3_leaving_home / T3_leaving_end" --> T3
+    T1 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_1Y1 / Station_1Y2" --> ENV
+    T3 -- "at_home / home_2_end<br/>at_end / end_2_home<br/>Station_2Y1" --> ENV
+    T1 -- "error_state" --> PANEL
+    T3 -- "error_state" --> PANEL
+    PANEL -- "start_light / reset_light<br/>Q2 (Station_H4)" --> ENV
+</pre>
+
+<pre class="mermaid" data-title="Figure 19. Env per-piece sequence, written in the actuator blocks' signals (2.6)">
 stateDiagram-v2
-    [*] --> IDLE
-    IDLE --> EJECT_BOTTOM : Part_AV and black
-    IDLE --> LIFTING : Part_AV and not black
-    LIFTING --> HEIGHT : lift up (beam clear)
-    HEIGHT --> EJECT_TOP : tall, top not full
-    HEIGHT --> LOWER : white to bottom
-    EJECT_TOP --> LOWER : ejected, top+1, blower
-    LOWER --> EJECT_BOTTOM : home and route bottom
-    LOWER --> IDLE : home and top-slide done
-    EJECT_BOTTOM --> IDLE : ejected, bottom+1
+    state "P1 idle<br/>classify piece" as P1
+    state "P2 raise lift<br/>T1_leaving_home" as P2
+    state "P3 read height<br/>Station_B5" as P3
+    state "P4 eject to top slide<br/>T3_leaving_home, blower on" as P4
+    state "P5 lower lift<br/>T1_leaving_end" as P5
+    state "P6 eject to bottom slide<br/>T3_leaving_home" as P6
+    [*] --> P1
+    P1 --> P6 : Part_AV and black
+    P1 --> P2 : Part_AV and not_black
+    P2 --> P3 : T1_at_end and beam_clear
+    P3 --> P4 : tall and top_not_full
+    P3 --> P5 : not tall (route bottom)
+    P4 --> P5 : T3_at_end, top+1
+    P5 --> P6 : T1_at_home and route_bottom
+    P5 --> P1 : T1_at_home and top slide done
+    P6 --> P1 : T3_at_end, bottom+1
 </pre>
 
 <pre class="code">PROGRAM Main_Testing   // 4th block: colour/height sort, blower, slide counters, beam, Q1/Q2
@@ -810,6 +1154,12 @@ black pieces were rejected straight to the bottom slide without lifting. Reset r
 the lift to bottom home and retracted the ejector; Stop mid-lift froze it; Start
 resumed. &nbsp;<b>PASS, 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 2.7&nbsp;&nbsp;Full station : Main (robust)</h2>
+<p>Same program with <code>ROBUST := TRUE</code>: the slide-full check, the
+safety-beam counter (<code>BEAM_LIMIT</code> scans) and both actuators' stall timers
+are armed.</p>
+
 <div class="result"><b>Result, 2.7 (robust).</b> Filling the bottom slide (3
 black + 2 white) lit Q1. A further white piece with the slide full stopped at entry
 after the height check and raised Q2 (reset required); a non-white piece with the
@@ -819,9 +1169,24 @@ stationary; blocking it &gt;3&nbsp;s raised Q2 and entered the error state.
 &nbsp;<b>PASS, 3/3.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>4.6&nbsp;&nbsp;SCADA : Testing (S2.1, S2.2)</h2>
-<p>Same Designer workflow as S1, plus a <b>colour/height readout</b> for the piece in
-process and <b>top/bottom slide counts</b>. The colour label derives from the sensors
+<h2>Milestone 2.8&nbsp;&nbsp;Gantt revision (after Station 2)</h2>
+<p>Reusing <code>FB_Actuator_T1</code> for the lift saved the expected time. Only the
+call-site I/O (home = down) and the beam polarity needed setting. The single-sensor
+<code>FB_Actuator_T3</code> ejector behaved as designed. S2 SCADA fit within
+Session 3. On plan.</p>
+</section>
+
+<!-- ============================= SCADA S2 ============================= -->
+<section class="sheet">
+<h1>SCADA : Testing Station &nbsp;&middot;&nbsp; Milestones S2.1, S2.2</h1>
+
+<h2>Milestone S2.1&nbsp;&nbsp;SCADA purpose</h2>
+<p>A supervisory window onto the Testing station in the same style as S1, with the
+addition of a <b>colour/height readout</b> for the piece in process and <b>top/bottom
+slide counts</b>.</p>
+
+<h2>Milestone S2.2&nbsp;&nbsp;SCADA build</h2>
+<p>Same Designer workflow as S1. The colour label derives from the sensors
 (<code>black := NOT B2</code>; white = not-black + short; red/metal = not-black + tall);
 the slide counts bind to the program's <code>top</code>/<code>bottom</code> variables;
 a blower icon pulses on <code>Station_3Y1</code>.</p>
@@ -832,21 +1197,11 @@ slide filled. All required elements present. &nbsp;<b>PASS, S2.1 1/1, S2.2 4/4.<
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 </section>
 
-<!-- ============================= 5. SORTING ============================= -->
+<!-- ============================= SORTING ============================= -->
 <section class="sheet">
-<h1>5&nbsp;&nbsp;Sorting Station (Milestones 3.1&ndash;3.3)</h1>
+<h1>Sorting Station &nbsp;&middot;&nbsp; Milestones 3.1&ndash;3.4</h1>
 
-<h2>5.1&nbsp;&nbsp;Purpose (3.1)</h2>
-<p>The Sorting station is the third and final station: it <b>sorts finished
-workpieces onto three slides by material and colour</b>. Pieces travel on a conveyor
-past an inductive <b>metallic</b> sensor and an optical <b>not-black</b> sensor; each
-piece is classed as metal, red (non-metal, not black) or black. Two pneumatic
-<b>deflector branches</b> push metal and red pieces onto slides 1 and 2; black pieces
-run to the end of the belt into slide 3. A retractable <b>stopper</b> releases pieces
-one at a time and a <b>slide-full</b> sensor halts the station. The branches reuse
-<code>FB_Actuator_T2</code> and the stopper reuses <code>FB_Actuator_T3</code>.</p>
-
-<h2>5.2&nbsp;&nbsp;I/O table</h2>
+<h3>Station preamble: I/O table</h3>
 <table>
 <tr><th>Name</th><th>Addr</th><th>Function</th><th>Used by</th></tr>
 <tr><td>Part_AV</td><td>0.00</td><td>Workpiece available</td><td>Main</td></tr>
@@ -861,39 +1216,90 @@ one at a time and a <b>slide-full</b> sensor halts the station. The branches reu
 <tr><td>Station_H1/H2/H3/H4</td><td>1.08&ndash;1.11</td><td>Start / Reset / Q1 / Q2</td><td>Panel + Main</td></tr>
 </table>
 
-<h2>5.3&nbsp;&nbsp;Full station : five blocks (3.2 proper, 3.3 robust)</h2>
-<pre class="mermaid" data-title="Figure 12. Sorting block diagram (5 blocks, 3.2)">
-flowchart TB
-    BTN[Panel_S1/S2/S4] --> PANEL[FB_Panel]
-    PANEL -- mode bits --> MAIN[Main control block]
-    PANEL -- mode bits --> B1[FB_Actuator_T2 branch 1]
-    PANEL -- mode bits --> B2[FB_Actuator_T2 branch 2]
-    PANEL -- mode bits --> STOP[FB_Actuator_T3 stopper]
-    MAIN -- go_b1 --> B1
-    MAIN -- go_b2 --> B2
-    MAIN -- go_stop --> STOP
-    B1 -- at_end/error --> MAIN
-    B2 -- at_end/error --> MAIN
-    MAIN -- error_in --> PANEL
-    B1 --> Y11[1Y1]
-    B2 --> Y21[2Y1]
-    STOP --> Y31[3Y1]
-    MAIN -- conveyor --> K1[Station_K1]
-    MAIN -- Q1 --> H3[Station_H3]
-    PANEL -- Q2 --> H4[Station_H4]
-</pre>
+<h2>Milestone 3.1&nbsp;&nbsp;Station purpose</h2>
+<p>The Sorting station is the third and final station: it <b>sorts finished
+workpieces onto three slides by material and colour</b>. Pieces travel on a conveyor
+past an inductive <b>metallic</b> sensor and an optical <b>not-black</b> sensor; each
+piece is classed as metal, red (non-metal, not black) or black. Two pneumatic
+<b>deflector branches</b> push metal and red pieces onto slides 1 and 2; black pieces
+run to the end of the belt into slide 3. A retractable <b>stopper</b> releases pieces
+one at a time and a <b>slide-full</b> sensor halts the station. The branches reuse
+<code>FB_Actuator_T2</code> and the stopper reuses <code>FB_Actuator_T3</code>.</p>
 
-<pre class="mermaid" data-title="Figure 13. Sorting per-piece sequence">
+<h2>Milestone 3.2&nbsp;&nbsp;Full station : five blocks (proper)</h2>
+<p>Five blocks here, because the station has three actuators: <code>Env</code>,
+<code>FB_Panel</code>, two instances of <code>FB_Actuator_T2</code> (the deflector
+branches) and one <code>FB_Actuator_T3</code> (the stopper). All three actuator blocks
+are reused unchanged; only the call-site I/O differs.</p>
+
+<h4>Sensors and solenoid valves used by the reused actuator blocks</h4>
+<table>
+<tr><th>Instance</th><th>Block</th><th>Inputs (limit switches)</th><th>Output (solenoid valve)</th></tr>
+<tr><td>Branch 1<br/>(metal &rarr; slide 1)</td><td>FB_Actuator_T2</td>
+<td>Station_1B1 0.04 retracted = <code>sensor_home</code><br/>
+Station_1B2 0.05 extended = <code>sensor_end</code></td>
+<td>Station_1Y1 1.01 branch 1 extend = <code>valve_extend</code></td></tr>
+<tr><td>Branch 2<br/>(red &rarr; slide 2)</td><td>FB_Actuator_T2</td>
+<td>Station_2B1 0.06 retracted = <code>sensor_home</code><br/>
+Station_2B2 0.07 extended = <code>sensor_end</code></td>
+<td>Station_2Y1 1.02 branch 2 extend = <code>valve_extend</code></td></tr>
+<tr><td>Stopper</td><td>FB_Actuator_T3</td>
+<td>none fitted; <code>sensor_home</code> is tied TRUE and the release is timed by
+<code>t_stroke</code></td>
+<td>Station_3Y1 1.03 stopper retract / release = <code>valve_extend</code></td></tr>
+</table>
+<p class="meta" style="font-size:.85em;">The branch FSMs are Figures&nbsp;8 and&nbsp;10
+with the substitutions above; the stopper's are Figures&nbsp;16 and&nbsp;17, with the
+<code>action_2_home</code> stall edge disabled because there is no retract sensor to
+detect arrival.</p>
+
+<pre class="mermaid" data-title="Figure 20. Sorting block diagram (5 blocks, 3.2)">
+flowchart TB
+    ENV["Env<br/>main control block<br/>Part_AV / Station_B2 / B3 / B4<br/>Station_K1 conveyor / Q1"]
+    PANEL["FB_Panel"]
+    B1["FB_Actuator_T2<br/>reused, branch 1"]
+    B2["FB_Actuator_T2<br/>reused, branch 2"]
+    STOP["FB_Actuator_T3<br/>reused, stopper"]
+    ENV -- "Panel_S1 / S2 / S4<br/>error_in" --> PANEL
+    PANEL -- "mode bits" --> B1
+    PANEL -- "mode bits" --> B2
+    PANEL -- "mode bits" --> STOP
+    ENV -- "1B1 / 1B2<br/>B1_leaving_home / _end" --> B1
+    ENV -- "2B1 / 2B2<br/>B2_leaving_home / _end" --> B2
+    ENV -- "S_leaving_home / _end" --> STOP
+    B1 -- "at_home / at_end<br/>Station_1Y1" --> ENV
+    B2 -- "at_home / at_end<br/>Station_2Y1" --> ENV
+    STOP -- "at_home / at_end<br/>Station_3Y1" --> ENV
+    B1 -- "error_state" --> PANEL
+    B2 -- "error_state" --> PANEL
+    PANEL -- "lights, Q2" --> ENV
+</pre>
+<p class="meta" style="font-size:.85em;">"mode bits" is the same bundle every actuator
+block receives on all three stations: <code>run_mode</code>, <code>pause_mode</code>,
+<code>reset_mode</code>, <code>error_mode</code>. Drawing it once per block rather than
+in full is the whole point of the reuse: the five blocks talk to each other through one
+fixed interface, so an actuator block can be moved between stations by re-wiring only
+the <code>Env</code> side.</p>
+
+<pre class="mermaid" data-title="Figure 21. Env per-piece sequence, written in the actuator blocks' signals (3.2)">
 stateDiagram-v2
-    [*] --> WAIT
-    WAIT --> CLASSIFY : Part_AV (release stopper)
-    CLASSIFY --> TO_B1 : metal
-    CLASSIFY --> TO_B2 : red
-    CLASSIFY --> TO_END : black
-    TO_B1 --> DONE : branch1 extends, slide1+1
-    TO_B2 --> DONE : branch2 extends, slide2+1
-    TO_END --> DONE : conveyor to end, slide3+1
-    DONE --> WAIT : next piece
+    state "W1 wait for piece<br/>conveyor off" as W1
+    state "W2 release and classify<br/>S_leaving_home" as W2
+    state "W3 carry to branch 1<br/>Station_K1 on" as W3
+    state "W4 carry to branch 2<br/>Station_K1 on" as W4
+    state "W5 carry to end<br/>Station_K1 on" as W5
+    state "W6 deflect to slide 1<br/>B1_leaving_home" as W6
+    state "W7 deflect to slide 2<br/>B2_leaving_home" as W7
+    [*] --> W1
+    W1 --> W2 : Part_AV and not_slide_full
+    W2 --> W3 : metal
+    W2 --> W4 : red
+    W2 --> W5 : black
+    W3 --> W6 : in position
+    W4 --> W7 : in position
+    W6 --> W1 : B1_at_end, slide1+1
+    W7 --> W1 : B2_at_end, slide2+1
+    W5 --> W1 : end of belt, slide3+1
 </pre>
 
 <pre class="code">PROGRAM Main_Sorting   // 5th block: conveyor, sort decision, counters, slide-full, Q1/Q2
@@ -960,17 +1366,35 @@ branch mid-travel completed the stroke then halted (home&rarr;end and end&rarr;h
 a Stop with a piece on the conveyor stopped the belt and Start resumed with the piece
 correctly sorted. &nbsp;<b>PASS, 3.1 1/1, 3.2 2/2.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
+
+<h2>Milestone 3.3&nbsp;&nbsp;Full station : five blocks (robust)</h2>
+<p>Same program with <code>ROBUST := TRUE</code>: both branch stall timers are armed
+and a piece that disappears between the stopper and its slide raises a fault.</p>
+
 <div class="result"><b>Result, 3.3 (robust).</b> Six pieces (2 black, 2 red, 2
 metal) placed back-to-back on the conveyor were all sorted correctly. Holding a branch
 raised Q2 and sent the station to the error state; taking a piece off the conveyor
 before it reached a slide raised Q2. &nbsp;<b>PASS, 3/3.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>5.4&nbsp;&nbsp;SCADA : Sorting (S3.1, S3.2)</h2>
-<p>The HMI shows the conveyor, both branches, a <b>colour/material readout</b> per
-piece (metal / red / black from <code>B2</code>/<code>B3</code>), and a
-<b>count on each of the three slides</b> bound to the program's counters, with
-animated transitions.</p>
+<h2>Milestone 3.4&nbsp;&nbsp;Gantt revision (after Station 3)</h2>
+<p>The two-branch <code>FB_Actuator_T2</code> reuse and the stopper
+<code>FB_Actuator_T3</code> dropped in without code changes. On track for
+L.1&ndash;L.3 in Sessions 4&ndash;5; no variance from plan.</p>
+</section>
+
+<!-- ============================= SCADA S3 ============================= -->
+<section class="sheet">
+<h1>SCADA : Sorting Station &nbsp;&middot;&nbsp; Milestones S3.1, S3.2</h1>
+
+<h2>Milestone S3.1&nbsp;&nbsp;SCADA purpose</h2>
+<p>A supervisory window onto the Sorting station showing the conveyor, both branches,
+a <b>colour/material readout</b> per piece (metal / red / black from
+<code>B2</code>/<code>B3</code>), and a <b>count on each of the three slides</b>.</p>
+
+<h2>Milestone S3.2&nbsp;&nbsp;SCADA build</h2>
+<p>The slide counts bind to the program's counters, with animated transitions as each
+piece is deflected onto its slide.</p>
 <div class="result"><b>Result, S3.1 / S3.2.</b> Material readout updated as each
 piece was recognised, the correct branch animated, and the matching slide count
 incremented; a Stop with a piece on the belt stopped the conveyor and Start resumed
@@ -978,11 +1402,11 @@ correct sorting; a full slide lit Q1. &nbsp;<b>PASS, S3.1 1/1, S3.2 4/4.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 </section>
 
-<!-- ============================= 6. INTEGRATED LINE ============================= -->
+<!-- ============================= INTEGRATED LINE ============================= -->
 <section class="sheet">
-<h1>6&nbsp;&nbsp;Integrated Production Line (L.1, L.2, L.3)</h1>
+<h1>Integrated Production Line &nbsp;&middot;&nbsp; Milestones L.1&ndash;L.3</h1>
 
-<h2>6.1&nbsp;&nbsp;Function-block reuse (L.1)</h2>
+<h2>Milestone L.1&nbsp;&nbsp;Function-block reuse</h2>
 <p>The whole line is built from four function blocks plus a per-station Main. L.1
 credits each block being the same block on more than one station; the block
 bodies never change; only the call-site I/O differs.</p>
@@ -998,14 +1422,14 @@ choice that makes the reuse hold is keeping the vacuum and ejector-pulse valves 
 <code>FB_Actuator_T1</code> (milestone 1.9), so the arm block drops onto the Testing
 lift with no baggage.</p>
 
-<pre class="mermaid" data-title="Figure 14. Inter-station handshake (IP_FI / IP_N_FO)">
+<pre class="mermaid" data-title="Figure 22. Inter-station handshake (IP_FI / IP_N_FO)">
 flowchart LR
     D[Distributing] -- workpiece --> T[Testing] -- workpiece --> S[Sorting]
     T -. IP_N_FO .-> D
     S -. IP_N_FO .-> T
 </pre>
 
-<h2>6.2&nbsp;&nbsp;Line proper (L.2)</h2>
+<h2>Milestone L.2&nbsp;&nbsp;Line proper</h2>
 <p>Only the Sorting station's buttons switch the whole line to run/reset/pause; the
 Sorting panel's mode is distributed to the other two stations, which ignore their local
 buttons. Adjacent suitcases are wired station-to-station with <code>IP_N_FO</code>
@@ -1018,12 +1442,12 @@ through the line; pausing and resuming three times (arm in-between, lift in-betw
 piece on the conveyor) resumed each time. &nbsp;<b>PASS, 5/5.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 
-<h2>6.3&nbsp;&nbsp;Line robust (L.3)</h2>
+<h2>Milestone L.3&nbsp;&nbsp;Line robust</h2>
 <p>Error (Q2) propagates <b>upstream only</b>: a fault at a station stops everything
 feeding it. This is implemented by ORing each downstream station's
 <code>error_mode</code> into the upstream stations' <code>FB_Panel.error_in</code>.</p>
 
-<pre class="mermaid" data-title="Figure 15. Upstream Q2 propagation (L.3)">
+<pre class="mermaid" data-title="Figure 23. Upstream Q2 propagation (L.3)">
 flowchart LR
     S[Sorting fault] --> T[Testing Q2]
     S --> D[Distributing Q2]
@@ -1043,9 +1467,9 @@ per its own specification. &nbsp;<b>PASS, 6/6.</b>
 <span class="sign">Tutor: <span class="box">&nbsp;</span> &nbsp; Date: <span class="box">&nbsp;</span></span></div>
 </section>
 
-<!-- ============================= 7. APPENDIX ============================= -->
+<!-- ============================= APPENDIX ============================= -->
 <section class="sheet">
-<h1>7&nbsp;&nbsp;Appendix: Design Verification</h1>
+<h1>Appendix: Design Verification</h1>
 <p>Before each lab, every station's control logic was checked step by step against
 its finite-state diagram and the station test protocol. Each numbered protocol step
 was walked through the diagram to confirm the state, valve outputs and lights matched
@@ -1075,9 +1499,9 @@ safety-beam polarity (<code>beam_blocked := NOT Station_B4</code>) was confirmed
 real station.</p>
 </section>
 
-<!-- ============================= 8. MARKS LEDGER ============================= -->
+<!-- ============================= MARKS LEDGER ============================= -->
 <section class="sheet">
-<h1>8&nbsp;&nbsp;Marks Ledger</h1>
+<h1>Marks Ledger</h1>
 <table class="ledger">
 <tr><th>#</th><th>Milestone</th><th>Session</th><th>Marks</th><th>Result</th></tr>
 <tr><td>P.1</td><td>Gantt chart + strategy</td><td>1</td><td class="m">1</td><td>&#10003;</td></tr>

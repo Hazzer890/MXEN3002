@@ -10,8 +10,8 @@
     black   := NOT Station_B2         (B2 = "workpiece not black")
     tall    := Station_B5             (height correct = tall = red/metal)
     white   = not black AND not tall   -> bottom slide
-    red/metal = not black AND tall     -> top slide (blower 1 s)
-    black                              -> bottom slide, no lift
+    red/metal = not black AND tall     -> top slide (blower 1 s), or bottom slide if top full
+    black                              -> bottom slide, no lift; top slide (lifted) if bottom full
 
   Beam polarity: Station_B4 is a through-beam (TRUE = clear). beam_blocked below
   is NOT Station_B4 -- VERIFY this polarity on the real bench and flip if needed.
@@ -26,31 +26,31 @@ VAR
                                    // 4 EJECT_BOTTOM 5 LOWER
     dest_bottom : BOOL;            // current piece routes to bottom after lower
     bottom, top : INT := 0;        // slide counts (cap 5)
-    beam_ctr    : INT := 0;        // safety-beam block duration (scans)
+    t_beam  : TON;                 // real-time beam-block dwell before fault
+    t_settle : TON;                // let the piece settle at top before sampling B5
     go_lift, go_ej, blower : BOOL;
     black, tall, beam_blocked : BOOL;
     fault, reset_done, beam_fault, proc_fault : BOOL;
-    ROBUST : BOOL := TRUE;
+    ROBUST : BOOL := FALSE;        // 2.7 = TRUE, 2.6 = FALSE (prove the plain cycle first)
     CAP    : INT  := 5;
-    BEAM_LIMIT : INT := 3;         // scans (~3 s) before beam -> error
 END_VAR
 
 reset_done := Lift.at_home AND Ejector.at_home;
-Panel(s1_start := Panel_S1, s2_stop := Panel_S2, s4_reset := Panel_S4,
+Panel(s1_start := Panel_S1, s2_stop := NOT Panel_S2,  // panel Stop is wired NC
+      s4_reset := Panel_S4,
       error_in := fault, reset_done := reset_done);
 
 IF Panel.reset_mode OR Panel.error_mode THEN
-    ps := 0; beam_ctr := 0; proc_fault := FALSE; dest_bottom := FALSE;
+    ps := 0; proc_fault := FALSE; dest_bottom := FALSE;
+END_IF;
+IF Panel.reset_mode THEN
+    bottom := 0; top := 0;   // operator empties the slides before pressing Reset
 END_IF;
 
 beam_blocked := NOT Station_B4;
-beam_fault := FALSE;
-IF beam_blocked AND (ps = 1 OR ps = 5) THEN
-    beam_ctr := beam_ctr + 1;
-    IF ROBUST AND beam_ctr >= BEAM_LIMIT THEN beam_fault := TRUE; END_IF;
-ELSIF NOT beam_blocked THEN
-    beam_ctr := 0;
-END_IF;
+t_beam(IN := beam_blocked AND (ps = 1 OR ps = 5), PT := T#3s);  // bench-tune
+beam_fault := ROBUST AND t_beam.Q;
+t_settle(IN := (ps = 2), PT := T#500ms);  // bench-tune
 
 go_lift := FALSE; go_ej := FALSE; blower := FALSE;
 IF Panel.run_mode THEN
@@ -58,23 +58,21 @@ IF Panel.run_mode THEN
     0:  (* IDLE: latch class of the presented workpiece *)
         IF Part_AV THEN
             black := NOT Station_B2;
-            IF black THEN ps := 4;              // straight to bottom, no lift
-            ELSE ps := 1; END_IF;
+            IF black AND bottom < CAP THEN ps := 4;  // straight to bottom, no lift
+            ELSE ps := 1; END_IF;               // lift (black too, if bottom full)
         END_IF;
     1:  (* LIFTING to the height sensor *)
-        IF NOT beam_blocked THEN
-            go_lift := TRUE;
-            IF Lift.at_end THEN ps := 2; END_IF;
-        END_IF;
-    2:  (* HEIGHT decision *)
-        tall := Station_B5;
-        IF tall THEN                            // red / metal -> top slide
-            IF top < CAP THEN ps := 3; ELSE ps := 5; dest_bottom := FALSE; END_IF;
-        ELSE                                    // white -> bottom slide
-            IF ROBUST AND bottom >= CAP THEN
-                proc_fault := TRUE;             // bottom full: stop at entry, error
+        IF Lift.at_end THEN ps := 2;
+        ELSIF NOT beam_blocked THEN go_lift := TRUE; END_IF;
+    2:  (* HEIGHT decision, after settle delay *)
+        IF t_settle.Q THEN
+            tall := Station_B5;
+            IF (tall OR black) AND top < CAP THEN
+                ps := 3;                        // red/metal, or black diverted -> top slide
+            ELSIF ROBUST AND bottom >= CAP THEN
+                proc_fault := TRUE;             // bottom full: stop, error (Q2)
             ELSE
-                dest_bottom := TRUE; ps := 5;
+                dest_bottom := TRUE; ps := 5;   // white, or tall diverted (top full)
             END_IF;
         END_IF;
     3:  (* EJECT to TOP slide, blower on *)
@@ -84,10 +82,9 @@ IF Panel.run_mode THEN
         go_ej := TRUE;
         IF Ejector.at_end THEN bottom := bottom + 1; ps := 0; END_IF;
     5:  (* LOWER lift home, then dispatch *)
-        go_lift := TRUE;
         IF Lift.at_home THEN
             IF dest_bottom THEN ps := 4; ELSE ps := 0; END_IF;
-        END_IF;
+        ELSE go_lift := TRUE; END_IF;
     END_CASE;
 END_IF;
 
